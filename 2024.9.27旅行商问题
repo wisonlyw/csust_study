@@ -1,0 +1,33 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+
+void dfs(int *a , int len , int num , int u ){
+    if (num == n){                                  //快走完了
+        if (dis[u][1] == -1){
+            return;                                //走不通
+        }
+        len += dis[u][1];                          //可以走通
+        ans = min(ans,len);                        //每个算完比一比
+        return;
+    }
+    for (int i = 2 ; i <= n ; i++){
+        int flg = 0;
+        for (int j = 1 ; j <= num ; j++){        //不走回头路
+            if (a[j]==i){
+                flag = 1;
+                break;
+            }
+        }
+        if (!flg&&dis[u][i]!=-1){
+            a[num+1] = i;                        //递归走可以走的
+            dfs(a,len+dis[u][i],num+1,i);
+        }
+    }
+}
+
+int main(){
+    
+    return 0;
+}
