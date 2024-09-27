@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool visit[4] = {false};
+
+bool all_visit() {
+    for (int i = 0; i < 4; i++) {
+        if (!visit[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int dfs(int city[4][4], int start, int position) {
+    // 如果所有城市都已访问且回到起始城市
+    if (all_visit() && start == position) {
+        return 1; // 找到一个访问所有城市的回路
+    }
+
+    int found = -1; // 用于跟踪是否找到有效的回路
+
+    // 探索所有城市
+    for (int i = 0; i < 4; i++) {
+        if (!visit[i] && city[position][i] > 0) {
+            visit[i] = true; // 将城市标记为已访问
+            found = dfs(city, start, i); // 递归调用 DFS
+
+            if (found == 1) { // 如果找到有效的回路
+                return 1;
+            }
+
+            visit[i] = false; // 回溯 - 取消标记城市
+        }
+    }
+
+    return found; // 返回结果
+}
+
+int main() {
+    int city[4][4];
+    cout << "请输入表示城市和连接关系的邻接矩阵（4x4）：" << endl;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            cin >> city[i][j]; // 读取邻接矩阵
+        }
+    }
+
+    int start = 0; // 从城市 0 开始
+
+    if (dfs(city, start, start) == 1) {
+        cout << "可以进行一个访问所有城市的游览。" << endl;
+    } else {
+        cout << "无法进行访问所有城市的游览。" << endl;
+    }
+
+    return 0;
+}
