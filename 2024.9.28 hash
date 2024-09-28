@@ -1,0 +1,24 @@
+class Solution {
+public:
+    bool reportSpam(vector<string>& message, vector<string>& bannedWords) {
+        unordered_map<string , int>hash;
+        for (int i = 0 ; i < message.size() ; i++){
+            hash[message[i]]++;
+        }
+        int cnt = 0;
+        vector<string>res;
+        sort(bannedWords.begin(),bannedWords.end());
+        for (int i = 0 ; i < bannedWords.size()-1 ; i++){
+            if (bannedWords[i]!=bannedWords[i+1]){
+                res.push_back(bannedWords[i]);
+            }
+        }
+        res.push_back(bannedWords[bannedWords.size()-1]);
+        for (int i = 0 ; i < res.size() ; i++){
+            if (hash[res[i]]>=1){
+                cnt+=hash[res[i]];
+            }
+        }
+        return cnt>=2;
+    }
+};
