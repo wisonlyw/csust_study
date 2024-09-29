@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int timeRequiredToBuy(vector<int>& tickets, int k) {
+        int len = tickets.size();
+        int start = 0;
+        int cnt = 0;
+        int index = k;
+        for (int i = start ; i < len ; i++){
+            if (tickets[i]>1){
+                if (i == index){
+                    index = len;
+                }
+                int tmp = tickets[i]-1;
+                tickets[i] = 0;
+                tickets.push_back(tmp);
+                start++;
+                cnt++;
+                len++;
+            }else{
+                tickets[i] = 0;
+                cnt++;
+                if (i == index){
+                    break;
+                }
+                start++;
+            }
+        }
+        return cnt;
+    }
+};
