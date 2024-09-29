@@ -1,83 +1,62 @@
-#include <iostream>  
-#include <vector>  
-#include <algorithm>  
-#include <cmath>  
+#include <bits/stdc++.h>
 
-using namespace std;  
+using namespace std;
 
-// 检查在 `targetTime` 时间内是否可以完成工作的函数  
-bool canCompleteInTime(int mountainHeight, const vector<int>& workerTimes, long long targetTime) {  
-    long long totalReducedHeight = 0;  
 
-    for (const auto& time : workerTimes) {  
-        long long maxX = 0;  
-        
-        // 使用公式计算该工人可以减少的高度  
-        // 我们需要在方程中求解 maxX： time * (maxX * (maxX + 1) / 2) <= targetTime  
-        // 本质上，我们在这个时间限制内尝试找到最大 `maxX`。  
 
-        // 此处，我们需要找到最大 `x` 使得：  
-        // time * (x * (x + 1) / 2) <= targetTime  
-        // 或者  
-        // (x * (x + 1)) <= (2 * targetTime / time)  
-
-        long long left = 0, right = mountainHeight;  
-
-        while (left < right) {  
-            long long mid = left + (right - left + 1) / 2;  
-            long long requiredTime = time * (mid * (mid + 1)) / 2;  
-
-            if (requiredTime <= targetTime) {  
-                left = mid; // 可以减少 `mid`，尝试更多  
-            } else {  
-                right = mid - 1; // 不能减少 `mid`，尝试更少  
-            }  
-        }  
-
-        totalReducedHeight += left; // 加上这个工人可以减少的最大高度  
-
-        if (totalReducedHeight >= mountainHeight) {  
-            return true; // 如果已经能够减少足够的高度，返回 true  
-        }  
-    }  
-
-    return totalReducedHeight >= mountainHeight; // 返回总共减少的高度是否足够  
-}  
-
-int minimumTimeToReduceMountain(int mountainHeight, vector<int>& workerTimes) {  
-    long long left = 0, right = 1e18; // 合理的上限  
-    long long result = right;  
-
-    while (left <= right) {  
-        long long mid = left + (right - left) / 2;  
-
-        if (canCompleteInTime(mountainHeight, workerTimes, mid)) {  
-            result = mid; // 找到一个有效的时间，尝试更少的时间  
-            right = mid - 1;  
-        } else {  
-            left = mid + 1; // 时间不够，尝试更长的时间  
-        }  
-    }  
-
-    return result; // 找到的最少时间  
-}  
-
-int main() {  
-    // 示例用法  
-    int mountainHeight = 4;  
-    vector<int> workerTimes = {2, 1, 1};  
-    
-    cout << minimumTimeToReduceMountain(mountainHeight, workerTimes) << endl; // 输出: 3  
-
-    mountainHeight = 10;  
-    workerTimes = {3, 2, 2, 4};  
-    
-    cout << minimumTimeToReduceMountain(mountainHeight, workerTimes) << endl; // 输出: 12  
-    
-    mountainHeight = 5;  
-    workerTimes = {1};  
-    
-    cout << minimumTimeToReduceMountain(mountainHeight, workerTimes) << endl; // 输出: 15  
-
-    return 0;  
+bool isPossible(long long mountainHeight , vector<long long>& workTimes , long long targetTime){
+    long long Height_done = 0;
+    for (int i = 0 ; i < workTimes.size() ; i++){
+        long long left = 0;
+        long long right = mountainHeight;
+        long long mid;
+        while (left<right){
+            mid = (left+right+1)/2;
+            long long require_time = workTimes[i]*(mid+1)*mid/2;
+            if (require_time<=targetTime){
+                left = mid;
+            }else{
+                right = mid-1;
+            }
+        }
+        Height_done += left;
+        if (Height_done>=mountainHeight){
+            return true;
+        }
+    }
+    return Height_done>=mountainHeight;
 }
+
+int minimumTimeToReduceMountain(long long mountainHeight, vector<long long>& workTimes) {
+    long long left = 0, right = 1e18;
+    long long result = right;
+    while (left <= right) {
+        long long mid =  (right + left) / 2;
+
+        if (isPossible(mountainHeight, workTimes, mid)) {
+            result = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return result;
+}
+
+
+int main(){
+    long long mountainHeight;
+    vector<long long>workTimes;
+    cin >> mountainHeight;
+    while (1){
+        long long workTime;
+        cin >> workTime;
+        workTimes.push_back(workTime);
+        if (getchar()=='\n'){
+            break;
+        }
+    }
+    cout << minimumTimeToReduceMountain(mountainHeight, workTimes) << endl;
+}
+
