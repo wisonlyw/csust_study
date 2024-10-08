@@ -1,0 +1,67 @@
+#include <iostream>  
+#include <vector>  
+#include <queue>  
+
+using namespace std;  
+
+class Graph {  
+public:  
+    Graph(int vertices);  
+    void addEdge(int u, int v);  
+    void bfs(int start);  
+
+private:  
+    int numVertices; // 图的顶点数  
+    vector<vector<int>> adj; // 邻接表  
+};  
+
+Graph::Graph(int vertices) {  
+    numVertices = vertices;  
+    adj.resize(vertices);  
+}  
+
+// 添加边  
+void Graph::addEdge(int u, int v) {  
+    adj[u].push_back(v);  
+    adj[v].push_back(u); // 如果是无向图  
+}  
+
+// 广度优先搜索模板  
+void Graph::bfs(int start) {  
+    vector<bool> visited(numVertices, false); // 访问标记数组  
+    queue<int> q; // 队列  
+    
+    visited[start] = true; // 标记起始节点为已访问  
+    q.push(start); // 将起始节点入队  
+
+    while (!q.empty()) { // 当队列不为空  
+        int current = q.front(); // 获取队列的前端元素  
+        q.pop(); // 访问该节点并出队  
+        
+        // 处理当前节点（如打印或其他操作）  
+        cout << current << " ";  
+
+        // 遍历所有邻居  
+        for (int neighbor : adj[current]) {  
+            if (!visited[neighbor]) { // 如果邻居未被访问过  
+                visited[neighbor] = true; // 标记为已访问  
+                q.push(neighbor); // 将邻居入队  
+            }  
+        }  
+    }  
+}  
+
+int main() {  
+    Graph g(6);  
+    g.addEdge(0, 1);  
+    g.addEdge(0, 2);  
+    g.addEdge(1, 3);  
+    g.addEdge(1, 4);  
+    g.addEdge(2, 5);  
+
+    cout << "BFS starting from vertex 0: ";  
+    g.bfs(0);  
+    cout << endl;  
+
+    return 0;  
+}
