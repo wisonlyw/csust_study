@@ -1,0 +1,50 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int dx[4] = {-1,0,0,1};
+int dy[4] = {0,-1,1,0};
+
+int cnt = 0;
+int minv = 1000;
+
+void backTrack(int x0 , int y0 , vector<vector<int>>&maze){
+    if (x0 == maze[0].size()-2){
+        minv = min(minv,cnt);
+        return ;
+    }
+    for (int i = 0 ; i < 4 ; i++){
+        if (x0+dx[i]<=maze[0].size()-2&&x0+dx[i]>=1&&y0+dy[i]>=1&&y0+dy[i]<=maze.size()-2&&maze[x0+dx[i]][y0+dy[i]] == 0){
+            maze[x0][y0] = 1;
+            x0 += dx[i];
+            y0 += dy[i];
+            cnt++;
+            backTrack(x0,y0,maze);
+            x0 -= dx[i];
+            y0 -= dy[i];
+            cnt -- ;
+            maze[x0][y0] = 0;
+        }
+    }
+}
+
+int main(){
+    int n , m;
+    cin >> n >> m;
+    int num_cow;
+    cin >> num_cow;
+    vector<vector<int>>maze(n+2,vector<int>(m+2,0));
+    while (num_cow--){
+        int x1 , y1;
+        cin >> x1 >> y1;
+        maze[x1+1][y1+1] = 1;
+        maze[x1+2][y1+1] = 1;
+        maze[x1][y1+1] = 1;
+        maze[x1+1][y1] = 1;
+        maze[x1+1][y1+2] = 1;
+    }
+    backTrack(1,1,maze);
+    cout << minv;
+
+    return 0;
+}
