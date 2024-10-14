@@ -1,0 +1,37 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+
+double minv = 16;
+
+void dfs(vector<double> &nums , int depth , double sum , double minv1){
+    if (sum-minv1<=15){
+        minv = min(max(minv1,sum-minv1),minv);
+        return;
+    }
+    if (minv1+nums[depth]<=15){
+        depth++;
+        dfs(nums,depth,sum,nums[depth-1]+minv1);
+        dfs(nums,depth,sum,minv1);
+    }
+}
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int n;
+        cin >> n;
+        vector<double>nums;
+        double sum = 0.0;
+        while (n--){
+            double car;
+            cin >> car;
+            sum += car;
+            nums.push_back(car);
+        }
+        dfs(nums,0,sum,0);
+        cout << minv << endl;
+    }
+    return 0;
+}
