@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>  
+using namespace std;  
+
+const double INF = 15.0;  
+
+int main() {  
+    int t;  
+    cin >> t; // 输入测试用例的个数  
+    while (t--) {  
+        int N; // 车辆数量  
+        cin >> N;  
+        
+        vector<double> lengths(N); // 每辆车所占用的长度  
+        for (int i = 0; i < N; ++i) {  
+            cin >> lengths[i]; // 输入每辆车的长度  
+        }  
+        
+        // BFS队列，由元组组成，(index, leftSum, rightSum)  
+        queue<tuple<int, double, double>> q;  
+        q.push({0, 0.0, 0.0}); // 从第0辆车和初始的左右总和入队  
+
+        double best = INF; // 最优解，初始为无穷大  
+
+        while (!q.empty()) {  
+            auto [index, leftSum, rightSum] = q.front();  
+            q.pop();  
+
+            if (index == N) { // 如果已经考虑了所有的车辆  
+                double maxLength = max(leftSum, rightSum);  
+                best = min(best, maxLength); // 更新最佳解  
+                continue;  
+            }  
+
+            // 尝试将当前车辆放在左边  
+            if (leftSum + lengths[index] <= 15) {  
+                q.push({index + 1, leftSum + lengths[index], rightSum});  
+            }  
+
+            // 尝试将当前车辆放在右边  
+            if (rightSum + lengths[index] <= 15) {  
+                q.push({index + 1, leftSum, rightSum + lengths[index]});  
+            }  
+        }  
+
+        // 输出结果，保留一位小数  
+        cout << fixed << setprecision(1) << best << endl;  
+    }  
+    return 0;  
+}
