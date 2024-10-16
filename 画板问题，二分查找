@@ -1,0 +1,66 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+//判断是否可以这样分配，要求人数不能超过限定值，curr_min为一个人最大工作量，
+bool isPossible(vector<int> &arr , int n , int painters , int curr_min){
+    int painterRequire = 1;
+    int curr_sum = 0;
+//当一个人没办法完成一项任务，就不行
+    for (int i = 0 ; i < n ; i++){
+        if (arr[i] > curr_min){
+           return false;
+        }
+//当一个人可以完成一项任务但是没办完之前累计任务，要多叫人
+        if (arr[i]+curr_sum>curr_min){
+            painterRequire++;
+          //curr_sum为累计的数量要跟每块画板的大小有关。
+            curr_sum = arr[i];
+          if (painterRequire > painters){
+              return false;
+          }
+        }else{
+          //给它加量
+            curr_sum += arr[i];
+        }
+    }
+    return true;
+}
+
+int findworkload(vector<int> &arr , int n , int painters){
+    int sum = 0;
+
+    if (n < painters){
+        return -1;
+    }
+    for (int i = 0 ; i < n ; i++){
+        sum += arr[i];
+    }
+    int left = 0;
+    int right = sum;
+    int result = 10000;
+    while (left <= right){
+        int mid = (left+right)/2;
+        if (isPossible(arr,n,painters,mid)){
+            result = min(result,mid);
+            right = mid-1;
+        }else{
+            left = mid+1;
+        }
+    }
+    return result;
+}
+
+int main(){
+    int n , m;
+    int result;
+    vector<int>boardLength;
+    cin >> n >> m;
+    for (int j = 0 ; j < n ; j++){
+        int temp;
+        cin >> temp;
+        boardLength.push_back(temp);
+    }
+    result = findworkload(boardLength,n,m);
+    cout << result << endl;
+    return 0;
+}
