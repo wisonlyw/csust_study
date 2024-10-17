@@ -1,0 +1,42 @@
+#include <vector>  
+#include <unordered_map>  
+#include <queue>  
+#include <algorithm>  
+
+using namespace std;  
+
+vector<int> calculateXSum(vector<int>& nums, int k, int x) {  
+    int n = nums.size();  
+    vector<int> answer(n - k + 1);  
+    
+    for (int i = 0; i <= n - k; ++i) {  
+        unordered_map<int, int> count;  
+        
+        // 统计子数组 nums[i..i+k-1] 中元素的出现次数  
+        for (int j = i; j < i + k; ++j) {  
+            count[nums[j]]++;  
+        }  
+        
+        // 使用优先队列获取出现次数最多的前 x 个元素  
+        priority_queue<pair<int, int>> pq;  
+        for (const auto& entry : count) {  
+            pq.push({entry.second, entry.first});  
+        }  
+        
+        // 计算 x-sum  
+        int currentXSum = 0;  
+        int limit = min(x, (int)count.size());  
+        
+        for (int j = 0; j < limit; ++j) {  
+            if (!pq.empty()) {  
+                auto top = pq.top();  
+                pq.pop();  
+                currentXSum += top.second*top.first; // top.second 是元素值  
+            }  
+        }  
+        
+        answer[i] = currentXSum;  
+    }  
+    
+    return answer;  
+} 
