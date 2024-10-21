@@ -1,0 +1,80 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+// 马走日
+    vector<pair<int, int>> knightMoves = {
+    {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+    {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
+};
+
+// 可行性检查
+bool isValid(int x, int y, int l) {
+    return x >= 0 && x < l && y >= 0 && y < l;
+}
+
+// 直接广度优先遍历
+int minKnightMoves(int startX, int startY, int endX, int endY, int l) {
+    if (startX == endX && startY == endY) {
+        return 0;
+    }
+    //记录已遍历的走法
+    vector<vector<bool>> visited(l, vector<bool>(l, false));
+    queue<pair<int, int>> q;
+
+    q.push({startX, startY});
+    visited[startX][startY] = true;
+
+    int moves = 0;
+
+    while (!q.empty()) {
+        moves++;
+        int size = q.size();
+
+        for (int i = 0; i < size; ++i) {
+            //入队
+            auto [x, y] = q.front();
+            q.pop();
+            //遍历走过的
+            for (auto move : knightMoves) {
+                int newX = x + move.first;
+                int newY = y + move.second;
+
+
+                if (isValid(newX, newY, l)) {
+
+                    if (newX == endX && newY == endY) {
+                        return moves;
+                    }
+                    //
+                    if (!visited[newX][newY]) {
+                        visited[newX][newY] = true;
+                        q.push({newX, newY});
+                    }
+                }
+            }
+        }
+    }
+
+    return -1; //走不到该点（理论上合法的初始点与终点走的到）
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    while (n--) {
+        int l;
+        cin >> l;
+
+        int startX, startY;
+        cin >> startX >> startY;
+        int endX, endY;
+        cin >> endX >> endY;
+
+        int result = minKnightMoves(startX, startY, endX, endY, l);
+        cout << result << endl;
+    }
+
+    return 0;
+}
