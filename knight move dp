@@ -1,0 +1,69 @@
+#include <iostream>  
+#include <vector>  
+#include <queue>  
+#include <climits>  
+
+using namespace std;  
+
+// 马的所有可能移动  
+const vector<pair<int, int>> knightMoves = {  
+    {2, 1}, {2, -1}, {-2, 1}, {-2, -1},  
+    {1, 2}, {1, -2}, {-1, 2}, {-1, -2}  
+};  
+
+// 校验坐标是否在棋盘内  
+bool isValid(int x, int y, int l) {  
+    return x >= 0 && x < l && y >= 0 && y < l;  
+}  
+
+// 动态规划方法  
+int minKnightMoves(int startX, int startY, int endX, int endY, int l) {  
+    // 如果起点和终点相同，直接返回 0  
+    if (startX == endX && startY == endY) return 0;  
+
+    // 创建一个棋盘，初始化为无穷大  
+    vector<vector<int>> dp(l, vector<int>(l, INT_MAX));  
+    dp[startX][startY] = 0; // 起点的步数为 0  
+
+    // 使用队列进行广度优先搜索（BFS）  
+    queue<pair<int, int>> q;  
+    q.push({startX, startY});  
+
+    while (!q.empty()) {  
+        auto [x, y] = q.front();  
+        q.pop();  
+
+        // 遍历所有可能的马的移动  
+        for (const auto &move : knightMoves) {  
+            int newX = x + move.first;  
+            int newY = y + move.second;  
+
+            if (isValid(newX, newY, l) && dp[newX][newY] > dp[x][y] + 1) {  
+                dp[newX][newY] = dp[x][y] + 1; // 更新新位置的步数  
+                q.push({newX, newY});  
+            }  
+        }  
+    }  
+
+    return (dp[endX][endY] == INT_MAX) ? -1 : dp[endX][endY]; // 如果无法到达，返回 -1  
+}  
+
+// 主函数  
+int main() {  
+    int n;  
+    cin >> n; // 输入测试用例的数量  
+
+    while (n--) {  
+        int l;  
+        cin >> l; // 输入棋盘的边长  
+
+        int startX, startY;  
+        cin >> startX >> startY; // 输入起始位置  
+        int endX, endY;  
+        cin >> endX >> endY; // 输入目标位置  
+
+        int result = minKnightMoves(startX, startY, endX, endY, l);  
+        cout << result << endl; // 输出最小移动次数  
+    }  
+
+    return 0;  
