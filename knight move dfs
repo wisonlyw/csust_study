@@ -1,0 +1,35 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int minv = MAX_INT;
+
+int dx[];
+int dy[];
+bool visited[] = {false};
+
+bool isPossible(){
+    
+}
+
+void dfs(int startX ,int startY , int endX , int endY){
+    if (startX == endX && startY = endY){
+        minv = min(minv,cnt);
+        return; 
+    }
+    for (int i = 0 ; i < 8 ; ++i){
+        if (isPossible()){
+            cnt++;
+            startX += dx[i];
+            startY += dy[i];
+            dfs(startX , startY , endX , endY);
+            startX -= dx[i];
+            startY -= dy[i];
+            cnt--;
+        }
+    }
+}
+
+int main(){
+    
+}
