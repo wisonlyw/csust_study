@@ -7,7 +7,6 @@ using namespace std;
     {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
     {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
 };
-
 // 可行性检查
 bool isValid(int x, int y, int l) {
     return x >= 0 && x < l && y >= 0 && y < l;
@@ -32,7 +31,7 @@ int minKnightMoves(int startX, int startY, int endX, int endY, int l) {
         int size = q.size();
 
         for (int i = 0; i < size; ++i) {
-            //入队
+            //直接取pair的first与second
             auto [x, y] = q.front();
             q.pop();
             //遍历走过的
