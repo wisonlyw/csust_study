@@ -1,0 +1,37 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int sum = 0;
+        int dp[105][105] = {0};
+        int n , m;
+        cin >> n >> m;
+        vector<int>stu;
+        while (n--){
+            int temp;
+            cin >> temp;
+            stu.push_back(temp);
+            sum += temp;
+        }
+        for (int i = 1 ; i < n ; i++){
+            for (int j = 0 ; j <= m ; j++){
+                if (j>=stu[i]){
+                    dp[i][j] = max(dp[i-1][j],dp[i][j-stu[i]]+stu[i]);
+                }else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+        if (sum-dp[n-1][m]<=m){
+            cout << 1 << endl;
+        }else{
+            cout << 0 << endl;
+        }
+    }
+    return 0;
+}
