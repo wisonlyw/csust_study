@@ -1,47 +1,53 @@
-#include <bits/stdc++.h>  
+#include<bits/stdc++.h>
 
-using namespace std;  
+using namespace std;
 
-int minv = INT_MAX; // 使用更大的初始值  
-int dx[8] = {-2,-2,-1,-1,1,1,2,2};   
-int dy[8] = {-1,1,-2,2,-2,2,-1,1};   
-bool visited[500][500] = {false};   
+int minv = 10000;
+int cnt = 0;
+int dx[8] = {-2,-2,-1,-1,1,1,2,2};
+int dy[8] = {-1,1,-2,2,-2,2,-1,1};
+bool visited[500][500] = {false};
 
-bool isPossible(int x, int y, int edge) {  
-    return x >= 0 && x < edge && y >= 0 && y < edge && !visited[x][y];   
-}  
+bool isPossible(int x , int y , int edge){
+    return x >= 0 && x < edge && y >= 0 && y < edge && !visited[x][y];
+}
 
-void dfs(int startX, int startY, int endX, int endY, int edge, int cnt) {  
-    if (startX == endX && startY == endY) {  
-        minv = min(minv, cnt);  
-        return;   
-    }  
-    for (int i = 0; i < 8; ++i) {  
-        int newX = startX + dx[i];   
-        int newY = startY + dy[i];   
-        if (isPossible(newX, newY, edge)) {  
-            visited[newX][newY] = true; // 标记为已访问  
-            dfs(newX, newY, endX, endY, edge, cnt + 1); // 递归  
-            visited[newX][newY] = false; // 回溯，取消标记  
-        }  
-    }  
-}  
+void dfs(int startX ,int startY , int endX , int endY , int edge){
+    if (startX == endX && startY == endY){
+        minv = min(minv,cnt);
+        return;
+    }
+    for (int i = 0 ; i < 8 ; i++){
+        if (isPossible(startX+dx[i],startY+dy[i],edge)&&cnt<=minv){
+            cnt++;
+            startX += dx[i];
+            startY += dy[i];
+            visited[startX][startY] = true;
+            dfs(startX , startY , endX , endY , edge);
+            visited[startX][startY] = false;
+            startX -= dx[i];
+            startY -= dy[i];
+            cnt--;
+        }
+    }
+}
 
-int main() {  
-    int edge;  
-    cin >> edge;   
-    int x0, y0;   
-    cin >> x0 >> y0;   
-    int x1, y1;   
-    cin >> x1 >> y1;   
+int main(){
+    int n;
+    cin >> n;
+    while (n--){
+       int edge;
+        cin >> edge;
+        int x0 , y0;
+        cin >> x0 >> y0;
+        visited[x0][y0] = true;
+        int x1 , y1;
+        cin >> x1 >> y1;
+        dfs(x0,y0,x1,y1,edge);
+        cout << minv << endl;
+        minv = 10000;
+        visited[500][500] = {false};
+        cnt = 0;
+    }
 
-    if (x0 == x1 && y0 == y1) {  
-        cout << 0 << endl; // 起点和终点相同  
-        return 0;   
-    }  
-
-    visited[x0][y0] = true;   
-    dfs(x0, y0, x1, y1, edge, 0); // 传递当前步数  
-    cout << (minv == INT_MAX ? -1 : minv) << endl; // 如果没有找到路径，返回 -1  
-    return 0;   
 }
