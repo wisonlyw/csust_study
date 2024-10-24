@@ -1,0 +1,50 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+
+    while (t--){
+        int n;
+        cin >> n;
+        int sum = 0;
+        vector<int>nums;
+        while (n--){
+            int temp;
+            cin >> temp;
+            nums.push_back(temp);
+            sum += temp;
+        }
+        if (sum%2==1){
+            cout << "false" << endl;
+            break;
+        }
+
+        int dp[105][105] = {0};
+
+        for (int j = 0 ; j <= sum/2 ; j++){
+            if (j>=nums[0]){
+                dp[0][j] = nums[0];
+            }
+        }
+        //注意状态转移方程跟01背包问题的差异
+        for (int i = 1 ; i < nums.size() ; i++){
+            for (int j = 0 ; j <= sum/2 ; j++){
+                if (j>=nums[i]){
+                    dp[i][j] = max(dp[i-1][j],dp[i-1][j-nums[i]]+nums[i]);
+                }else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+
+        if (dp[nums.size()-1][sum/2] == sum /2){
+            cout << "true" << endl;
+        }else{
+            cout << "false" <<endl;
+        }
+    }
+    return 0;
+}
