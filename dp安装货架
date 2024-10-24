@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+
+    while(t--){
+        int x , y , z;
+        cin >> x >> y >> z;
+        int dp[1000] = {0};
+        for (int i = 0 ; i <= x ; i++){
+            if (i>=max(y,z)){
+                dp[i] = max(dp[i-y]+y,dp[i-z]+z);
+            }else if (i<max(y,z)&&i>=min(y,z)){
+                dp[i] = dp[i-min(y,z)]+min(y,z);
+            }
+        }
+        for (int i = 0 ; i < 100 ; i++){
+            bool en = 0;
+            for (int j = 0 ; j < 100 ; j++){
+                if (max(y,z)*j+min(y,z)*i == dp[x]){
+                    if (y>z){
+                        cout << j << " " << i << " " << x - dp[x] << endl ;
+                    }else{
+                        cout << i << " " << j << " " << x - dp[x] << endl ;
+                    }
+                    en = 1;
+                    break;
+                }
+            }
+            if (en == 1){
+                break;
+            }
+        }
+    }
+    return 0;
+}
