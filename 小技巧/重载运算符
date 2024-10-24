@@ -1,0 +1,15 @@
+#include <cmath> // 用于 std::sqrt 和 std::pow// 函数定义：计算复数的模长double magnitude(double real, double imag) {  
+ return std::sqrt(real * real + imag * imag);  
+}  
+
+// 重载 > 运算符bool operator>(const std::pair<double, double>& a, const std::pair<double, double>& b) {  
+ return magnitude(a.first, a.second) > magnitude(b.first, b.second);  
+}  
+
+// 重载 < 运算符bool operator<(const std::pair<double, double>& a, const std::pair<double, double>& b) {  
+ return magnitude(a.first, a.second) < magnitude(b.first, b.second);  
+}  
+
+// 输出复数void printComplex(double real, double imag) {  
+ std::cout << real << (imag >=0 ? "+" : "") << imag << "i";  
+}  
