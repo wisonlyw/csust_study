@@ -1,0 +1,36 @@
+using namespace std;  
+
+// 定义二叉树的节点结构
+struct TreeNode {  
+   int val;  
+   TreeNode *left;  
+   TreeNode *right;  
+   TreeNode(int x) : val(x), left(NULL), right(NULL) {}  
+};  
+
+class Solution {  
+  public:  
+     vector<vector<int>> pathSum(TreeNode* root, int targetSum) {  
+     vector<vector<int>> result; // 用于存储结果 vector<int> currentPath; // 当前路径 
+     findPaths(root, targetSum,0, currentPath, result);  
+     return result;  
+  }  
+private:  
+     void findPaths(TreeNode* node, int targetSum, int currentSum,  
+     vector<int>& currentPath, vector<vector<int>>& result) {  
+     if (!node) {  
+        return; // 如果节点为空，返回 
+        }  
+   // 更新当前路径和 currentPath.push_back(node->val);  
+    currentSum += node->val;  
+    // 检查是否为叶子节点，并且当前路径和是否等于目标和 
+     if (!node->left && !node->right && currentSum == targetSum) {  
+       result.push_back(currentPath); // 添加当前路径到结果 
+      } else {  
+ //继续深入左子树和右子树 
+     findPaths(node->left, targetSum, currentSum, currentPath, result);  
+     findPaths(node->right, targetSum, currentSum, currentPath, result);  
+     }  
+ // 回溯，移除当前节点 currentPath.pop_back();  
+   }  
+};  
