@@ -1,0 +1,34 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int dis , n;
+        vector<int>nums;
+        cin >> dis >> n;
+        while (n--){
+            int temp;
+            cin >> temp;
+            nums.push_back(temp);
+        }
+        int dp[100] = {0};
+    	
+    	for (int i = 0 ; i < nums.size() ;i++){
+    		dp[nums[i]] = 1;
+		}
+    	
+        for (int i = 0 ; i <= dis ; i++){
+            for (int j = 0 ; j < nums.size() ; j++){
+                if (i >= nums[j]){
+                    dp[i] += dp[i-nums[j]];
+                }
+            }
+        }
+        cout << dp[dis] << endl;
+    }
+
+    return 0;
+}
