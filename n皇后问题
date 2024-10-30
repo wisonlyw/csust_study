@@ -1,0 +1,36 @@
+class Solution {  
+public:  
+    int cnt = 0;  
+
+    int totalNQueens(int n) {  
+        vector<bool> column(n, true); // 列的状态  
+        vector<bool> diag1(2 * n, true); // 主对角线 (i - j) 状态  
+        vector<bool> diag2(2 * n, true); // 副对角线 (i + j) 状态  
+        backtrack(0, n, column, diag1, diag2);  
+        return cnt;  
+    }  
+
+    void backtrack(int row, int n, vector<bool>& column, vector<bool>& diag1, vector<bool>& diag2) {  
+        if (row == n) {  
+            cnt++; // 找到一个解法  
+            return;  
+        }  
+
+        for (int col = 0; col < n; col++) {  
+            if (column[col] && diag1[row - col + n] && diag2[row + col]) {  
+                // 放置皇后  
+                column[col] = false;  
+                diag1[row - col + n] = false;  
+                diag2[row + col] = false;  
+
+                // 递归到下一行  
+                backtrack(row + 1, n, column, diag1, diag2);  
+
+                // 撤销放置  
+                column[col] = true;  
+                diag1[row - col + n] = true;  
+                diag2[row + col] = true;  
+            }  
+        }  
+    }  
+};
