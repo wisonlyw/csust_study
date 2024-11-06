@@ -1,0 +1,102 @@
+#include <iostream>  
+#include <vector>  
+#include <string>  
+#include <algorithm>  
+
+using namespace std;  
+
+// 高精度大数类  
+class BigInt {  
+public:  
+    string value; // 用字符串存储值  
+
+    // 默认构造函数  
+    BigInt() {  
+        value = "0";  
+    }  
+
+    // 构造函数  
+    BigInt(const string& str) {  
+        value = str;  
+        removeLeadingZeros();  
+    }  
+
+    // 移除前导零  
+    void removeLeadingZeros() {  
+        while (value.length() > 1 && value[0] == '0') {  
+            value.erase(0, 1);  
+        }  
+    }  
+
+    // 重载加法  
+    BigInt operator+(const BigInt& other) const {  
+        string a = value;  
+        string b = other.value;  
+        if (a.length() < b.length()) {  
+            swap(a, b); // 保证 a 是较大的数  
+        }  
+        string result = "";  
+        int carry = 0;  
+        int aLen = a.length(), bLen = b.length();  
+        reverse(a.begin(), a.end());  
+        reverse(b.begin(), b.end());  
+
+        // 按位相加  
+        for (int i = 0; i < aLen || i < bLen || carry; ++i) {  
+            int sum = carry;  
+            if (i < aLen) sum += a[i] - '0';  
+            if (i < bLen) sum += b[i] - '0';  
+            result.push_back(sum % 10 + '0');  
+            carry = sum / 10;  
+        }  
+        reverse(result.begin(), result.end());  
+        return BigInt(result);  
+    }  
+
+    // 乘法  
+    BigInt operator*(int x) const {  
+        string a = value;  
+        string result = "";  
+        int carry = 0;  
+
+        for (int i = a.length() - 1; i >= 0; --i) {  
+            int prod = (a[i] - '0') * x + carry;  
+            result.push_back(prod % 10 + '0');  
+            carry = prod / 10;  
+        }  
+        while (carry) {  
+            result.push_back(carry % 10 + '0');  
+            carry /= 10;  
+        }  
+        reverse(result.begin(), result.end());  
+        return BigInt(result);  
+    }  
+
+    // 输出重载  
+    friend ostream& operator<<(ostream& os, const BigInt& bigInt) {  
+        os << bigInt.value;  
+        return os;  
+    }  
+};  
+
+// 计算 S = 1! + 2! + ... + n!  
+BigInt factorialSum(int n) {  
+    BigInt sum;  
+    BigInt factorial("1");  
+
+    for (int i = 1 ; i <= n; i++) {  
+    	factorial = factorial * i;
+        sum = sum + factorial;  
+        	 // 更新下一个阶乘  
+    }  
+    return sum;  
+}  
+
+int main() {  
+    int n;  
+    cin >> n;  
+    BigInt result = factorialSum(n);  
+    cout << result << endl; // 输出结果
+	  
+    return 0;  
+}  
