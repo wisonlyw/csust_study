@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> resultsArray(vector<int>& nums, int k) {
+        int left = 0;
+        int right = k-1;
+        vector<int>ans;
+
+        while (right<nums.size()){
+            bool is_break = false;
+            for (int i = left ; i < right ; i++){
+                if (nums[i]!=nums[i+1]-1){
+                    ans.push_back(-1);
+                    left++;
+                    right++;
+                    is_break = true;
+                    break;
+                }
+            }
+            if (!is_break){
+                ans.push_back(nums[right]);
+                left++;
+                right++;
+            }
+        }
+        return ans;
+    }
+};
