@@ -1,0 +1,17 @@
+
+
+//初始化：
+BFS(graph, start_node):   //创建一个队列（可以使用先进先出队列）来存储待访问的节点。
+    initialize an empty queue Q  
+    initialize an empty set visited  
+    Q.enqueue(start_node)   //将起始节点加入队列，并标记为已访问。
+    visited.add(start_node)  
+//重复以下步骤，直到队列为空：
+    while not Q.is_empty():  
+        current_node = Q.dequeue()  //从队列中取出一个节点（通常是队列的前端）。
+        process(current_node)  //处理该节点（例如，输出节点的值或进行其他操作）。
+
+        for each neighbor in graph.neighbors(current_node):  
+            if neighbor not in visited:  //将该节点的所有未访问的邻接节点加入队列，并标记为已访问。
+                Q.enqueue(neighbor)  
+                visited.add(neighbor)  
