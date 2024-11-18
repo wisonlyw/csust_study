@@ -1,0 +1,16 @@
+#include <iostream>  
+#include <vector>  
+using namespace std;  
+
+// 回溯函数  
+void backtrack(vector<int>& nums, int index, vector<int>& current, vector<vector<int>>& result) {  
+    // 将当前子集添加到结果中  
+    result.push_back(current);  
+
+    // 从当前索引开始向后遍历  
+    for (int i = index; i < nums.size(); ++i) {  
+        current.push_back(nums[i]); // 选择当前元素  
+        backtrack(nums, i + 1, current, result); // 递归调用  
+        current.pop_back(); // 撤销选择  
+    }  
+} 
