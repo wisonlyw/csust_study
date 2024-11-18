@@ -1,0 +1,91 @@
+#include <iostream>  
+#include <vector>  
+#include <string>  
+
+using namespace std;  
+
+// 定义移动方向的数组  
+const int directions[8][2] = {  
+    {-1, 0},  // 上  
+    {1, 0},   // 下  
+    {0, -1},  // 左  
+    {0, 1},   // 右  
+    {-1, -1}, // 左上  
+    {-1, 1},  // 右上  
+    {1, -1},  // 左下  
+    {1, 1}    // 右下  
+};  
+
+class Solution {  
+public:  
+    int numMatches;  
+    vector<vector<bool>> visited;  
+    int rows, cols;  
+
+    void backtrack(int x, int y, const vector<vector<char>>& board, const string& word, int index) {  
+        // 如果找到完整的单词，增加匹配数量  
+        if (index == word.size()) {  
+            numMatches++;  
+            return;  
+        }  
+
+        // 检查越界和字符匹配  
+        if (x < 0 || x >= rows || y < 0 || y >= cols || board[x][y] != word[index] || visited[x][y]) {  
+            return;  
+        }  
+
+        // 标记当前字符为已访问  
+        visited[x][y] = true;  
+
+        // 向8个方向扩展搜索  
+        for (int i = 0; i < 8; i++) {  
+            int newX = x + directions[i][0];  
+            int newY = y + directions[i][1];  
+            backtrack(newX, newY, board, word, index + 1);  
+        }  
+
+        // 回溯，标记当前字符为未访问  
+        visited[x][y] = false;  
+    }  
+
+    int findWordInMatrix(const vector<vector<char>>& board, const string& word) {  
+        rows = board.size();  
+        cols = board[0].size();  
+        numMatches = 0;  
+        visited = vector<vector<bool>>(rows, vector<bool>(cols, false));  
+
+        for (int i = 0; i < rows; i++) {  
+            for (int j = 0; j < cols; j++) {  
+                backtrack(i, j, board, word, 0);  
+            }  
+        }  
+
+        return numMatches;  
+    }  
+};  
+
+int main() {  
+    int t;  
+    cin >> t;  
+
+    while (t--) {  
+        int M, N;  
+        cin >> M >> N;  
+
+        vector<vector<char>> board(M, vector<char>(N));  
+        for (int i = 0; i < M; i++) {  
+            for (int j = 0; j < N; j++) {  
+                cin >> board[i][j];  
+            }  
+        }  
+
+        string S;  
+        cin >> S;  
+
+        Solution solution;  
+        int count = solution.findWordInMatrix(board, S);  
+        cout << count << endl;  
+    }  
+
+    return 0;  
+}  
