@@ -1,0 +1,63 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+bool valid(int x , int y , int m , int n , vector<vector<int> >nums){
+	return 0<=x&&x<m&&0<=y&&y<n&&nums[x][y]!=0;
+}
+
+bool visit[100][100] = {false}; 
+int dx[4] = {-1,0,0,1};
+int dy[4] = {0,-1,1,0};
+
+int BFS(vector<vector<int> >nums , int startX , int startY , int endX , int endY , int m , int n){
+	if (startX == endX && startY == endY){
+		return 0;
+	}
+	
+	int steps = 0;
+	queue<pair<int,int>>q;
+	q.push({startX,startY});
+	visit[startX][startY] = true;
+	
+	while (!q.empty()){
+		for (int s = 0 ; s < q.size() ; s++){
+			int x;
+			int y;
+			x = q.front().first;
+			y = q.front().second;
+			q.pop();
+			if (x == endX && y == endY){
+				return steps;
+			}
+			for (int i = 0 ; i < 4 ; i++){
+				int x1 = x + dx[i];
+				int y1 = y + dy[i];
+				if (valid(x1,y1,m,n,nums)&&!visit[x1][y1]){
+					q.push({x1,y1});
+					visit[x1][y1] = true;
+				}
+			}
+		}
+		steps++;
+	}
+	return -1;
+}
+
+int main() {  
+    // 示例用法  
+    vector<vector<int>> grid = {{1, 1, 0, 1},  
+                                 {1, 1, 0, 1},  
+                                 {0, 1, 1, 1}};  
+    int startX = 0, startY = 0;  
+    int endX = 2, endY = 2;  
+    int result = BFS(grid, startX, startY, endX, endY, grid.size(), grid[0].size());  
+    
+    if (result != -1) {  
+        cout << "Shortest path length: " << result << endl;  
+    } else {  
+        cout << "No path exists" << endl;  
+    }  
+    
+    return 0;  
+}  
