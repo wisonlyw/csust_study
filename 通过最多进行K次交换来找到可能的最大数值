@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+ 
+using namespace std;
+ 
+// 用于递归寻找最大数
+void findMaximum(string str, int k, string &maxNum, int index) {
+    if (k == 0) return;
+ 
+    int n = str.size();
+ 
+    // 尝试每一位进行交换
+    char maxChar = str[index];
+    for (int i = index + 1; i < n; i++) {
+        // 找到最大位
+        if (str[i] > maxChar)
+            maxChar = str[i];
+    }
+ 
+    //如果最初值和最大值不相等，证明要交换，那么次数减1
+    if (maxChar != str[index])
+        k--;
+ 
+    for (int i = index; i < n; i++) {
+        if (str[i] == maxChar) {
+            // 交换当前位置字符和 index 位置字符
+            swap(str[index], str[i]);
+ 
+            // 如果新的组合大于当前最大数，更新最大数
+            if (str.compare(maxNum) > 0)
+                maxNum = str;
+ 
+            // 继续从下一个位置递归
+            findMaximum(str, k, maxNum, index + 1);
+ 
+            // 回溯交换
+            swap(str[index], str[i]);
+        }
+    }
+}
+ 
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        string N;
+        int K;
+        cin >> N >> K;
+ 
+        string maxNum = N;
+        findMaximum(N, K, maxNum, 0);
+ 
+        cout << maxNum << endl;
+    }
+    return 0;
+}
+————————————————
+
+                            版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+                        
+原文链接：https://blog.csdn.net/2303_79132118/article/details/142825524
