@@ -1,0 +1,84 @@
+#include <iostream>  
+#include <vector>  
+#include <string>  
+
+using namespace std;  
+
+class Solution {  
+public:  
+    // DFS 函数用于在矩阵中查找给定字符串  
+    int dfs(int x, int y, int index, const string& str, vector<vector<char>>& board, vector<vector<bool>>& visited) {  
+        // 如果当前字符匹配，检查是否已经到达字符串的末尾  
+        if (index == str.size()) {  
+            return 1;  // 找到一个匹配  
+        }  
+
+        // 方向数组，表示可以移动的8个方向  
+        int directions[8][2] = {  
+            {-1, 0}, {1, 0}, {0, -1}, {0, 1}, // 上 下 左 右  
+            {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // 左上 右上 左下 右下  
+        };  
+
+        visited[x][y] = true;  // 标记当前字符为已访问  
+        int count = 0;  // 统计找到的匹配数  
+
+        // 遍历所有8个方向  
+        for (int i = 0; i < 8; ++i) {  
+            int newX = x + directions[i][0];  
+            int newY = y + directions[i][1];  
+
+            // 检查新位置是否在界限内并且字符是否匹配  
+            if (newX >= 0 && newY >= 0 && newX < board.size() && newY < board[0].size() &&  
+                !visited[newX][newY] && board[newX][newY] == str[index]) {  
+                count += dfs(newX, newY, index + 1, str, board, visited);  
+            }  
+        }  
+
+        visited[x][y] = false;  // 回溯，标记为未访问  
+        return count;  // 返回找到的匹配数量  
+    }  
+
+    // 主函数，找到所有字符串的匹配数  
+    int findOccurrences(vector<vector<char>>& board, const string& str) {  
+        int count = 0;  
+        int m = board.size(), n = board[0].size();  
+
+        // 创建一个访问数组  
+        vector<vector<bool>> visited(m, vector<bool>(n, false));  
+
+        // 遍历矩阵中每一个字符  
+        for (int i = 0; i < m; ++i) {  
+            for (int j = 0; j < n; ++j) {  
+                // 如果当前字符与字符串的第一个字符匹配，进行 DFS  
+                if (board[i][j] == str[0]) {  
+                    count += dfs(i, j, 1, str, board, visited);  
+                }  
+            }  
+        }  
+        return count;  
+    }  
+};  
+
+int main() {  
+    int t;  
+    cin >> t;  // 输入测试用例个数  
+    while (t--) {  
+        int M, N;  
+        cin >> M >> N;  // 输入矩阵的行数和列数  
+
+        vector<vector<char>> board(M, vector<char>(N));  
+        for (int i = 0; i < M; ++i) {  
+            for (int j = 0; j < N; ++j) {  
+                cin >> board[i][j];  // 输入矩阵字符  
+            }  
+        }  
+
+        string S;  
+        cin >> S;  // 输入需要查找的字符串  
+
+        Solution solution;  
+        int result = solution.findOccurrences(board, S);  
+        cout << result << endl;  // 输出结果  
+    }  
+    return 0;  
+}
