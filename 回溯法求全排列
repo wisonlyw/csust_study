@@ -1,0 +1,26 @@
+#include <iostream>  
+#include <vector>  
+
+void backtrack(std::vector<int>& nums, std::vector<bool>& used, std::vector<int>& current, std::vector<std::vector<int>>& result) {  
+    // 如果当前排列的长度等于输入数组的长度，表示找到一个完整的排列  
+    if (current.size() == nums.size()) {  
+        result.push_back(current);  
+        return;  
+    }  
+
+    // 遍历每个数字，尝试将它添加到当前排列中  
+    for (int i = 0; i < nums.size(); i++) {  
+        if (used[i]) continue; // 如果这个数字已经被使用，就跳过  
+
+        // 选择这个数字  
+        current.push_back(nums[i]);  
+        used[i] = true; // 标记为已使用  
+
+        // 递归进行下一步  
+        backtrack(nums, used, current, result);  
+
+        // 撤销选择，回溯  
+        current.pop_back(); // 从当前排列中移除最后一个数字  
+        used[i] = false; // 标记为未使用  
+    }  
+}  
