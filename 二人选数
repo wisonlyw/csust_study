@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+	int t;
+	cin >> t;
+	while (t--){
+		int n , x , y;
+		cin >> n >> x >> y;
+		bool dp[100] = {false};
+		dp[1] = true;
+		dp[x] = true;
+		dp[y] = true;
+		int cnt = 0;
+		for (int i = 0 ; i <= n ; i++){
+			if (dp[i] == true){
+				if (i+x<=n){
+					if (!dp[i+x]){
+						dp[i+x] = false;	
+					}
+				}
+				if (i+y<=n){
+					if (!dp[i+y]){
+						dp[i+y] = false;	
+					}
+				}
+				if (i+1<=n){
+					if (!dp[i+1]){
+						dp[i+1] = false;	
+					}
+				}
+			}else if (dp[i] == false){
+				if (i+x<=n){
+					dp[i+x] = true;
+				}
+				if (i+y<=n){
+					dp[i+y] = true;
+				}
+				if (i+1<=n){
+					dp[i+1] = true;
+				}	
+			}
+		}
+		if (dp[n]){
+			cout << "A" << endl;
+		}else{
+			cout << "B" << endl;
+		}
+	}
+	return 0;
+}
