@@ -1,0 +1,27 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+double solve(double a ,double b ,double c ,double d , double x){
+	return a*x*x*x+b*x*x+c*x+d;
+}
+
+int main(){
+	double a , b , c , d;
+	cin >> a >> b >> c >> d;
+	vector<double>res;
+	for (double i = -100 ; i <= 100 ; i+=0.01){
+		for (double j = i+1 ; j <= 100 ; j+=0.01){
+			if (solve(a,b,c,d,i)*solve(a,b,c,d,j)<0&&abs(solve(a,b,c,d,i))<0.01&&abs(solve(a,b,c,d,j))<0.01){
+				res.push_back(i);
+				res.push_back(j);
+				break;	
+			}
+		}
+	}
+	cout << fixed << std::setprecision(2);  
+	cout << res[0] << " ";
+	cout << res[1] << " ";
+	cout << res[3] << " ";
+	return 0;
+}
