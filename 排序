@@ -1,0 +1,48 @@
+#include <iostream>  
+#include <vector>  
+#include <algorithm>  
+#include <string>  
+
+using namespace std;  
+
+// 定义一个结构体来存储学生信息  
+struct Student {  
+    string name;  
+    int year;  
+    int month;  
+    int day;  
+
+    // 自定义排序规则  
+    bool operator<(const Student& other) const {  
+        // 按照出生日期从大到小排序  
+        if (year != other.year) {  
+            return year > other.year; // 年份较大的排在前面  
+        }  
+        if (month != other.month) {  
+            return month > other.month; // 月份较大的排在前面  
+        }  
+        return day > other.day; // 日期较大的排在前面  
+    }  
+};  
+
+int main() {  
+    int n;  
+    cin >> n; // 输入 OI 组总人数  
+
+    vector<Student> students(n); // 创建一个学生信息的向量  
+
+    // 输入每个学生的信息  
+    for (int i = 0; i < n; ++i) {  
+        cin >> students[i].name >> students[i].year >> students[i].month >> students[i].day;  
+    }  
+
+    // 按照自定义的规则进行排序  
+    sort(students.begin(), students.end());  
+
+    // 输出排序后的学生姓名  
+    for (const auto& student : students) {  
+        cout << student.name << endl;  
+    }  
+
+    return 0;  
+} 
