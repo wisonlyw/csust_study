@@ -1,0 +1,62 @@
+#include <iostream>  
+#include <vector>  
+using namespace std;  
+
+int main() {  
+    int n, k;  
+    cout << "输入总人数 n 和好人人数 k: ";  
+    cin >> n >> k;  
+
+    int bad_count = k; // 坏人的数量  
+    vector<bool> people(n, false); // false表示好人，true表示坏人  
+
+    // 标记坏人的位置  
+    for (int i = 0; i < k; ++i) {  
+        people[i + k] = true; // 前 k 个为好人，后 k 个为坏人  
+    }  
+
+    int m = 1; // 从 m=1 开始尝试  
+    while (true) {  
+        vector<bool> is_alive(n, true); // 标记每个人是否活着  
+        int alive_count = n; // 现存人数  
+        int current_index = 0; // 当前数数的位置  
+        int bad_killed = 0; // 记录已被杀死的坏人数量  
+
+        while (alive_count > 1) {  
+            int step_count = 0; // 统计当前数到第 m 个  
+            while (step_count < m) {  
+                if (is_alive[current_index]) {  
+                    step_count++; // 有人活着才数  
+                }  
+                if (step_count < m) {  
+                    current_index = (current_index + 1) % n; // 循环计数  
+                }  
+            }  
+
+            // 现在 current_index 是被杀的人的索引  
+            if (is_alive[current_index]) {  
+                if (people[current_index]) { // 如果是坏人  
+                    bad_killed++;  
+                }  
+                is_alive[current_index] = false; // 杀掉这个人  
+                alive_count--; // 人数减少  
+                
+                // 如果所有坏人都死了，就可以提前终止  
+                if (bad_killed == bad_count) {  
+                    break;  
+                }  
+            }  
+            current_index = (current_index + 1) % n; // 继续找下一个活着的人  
+        }  
+
+        // 检查最后状态，是否第一个好人被杀了  
+        if (bad_killed == bad_count && is_alive[0]) {  
+            cout << "找到满足条件的最小 m: " << m << endl;  
+            break;  
+        }  
+
+        m++; // 增加 m，继续尝试  
+    }  
+
+    return 0;  
+}  
