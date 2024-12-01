@@ -1,0 +1,64 @@
+#include <iostream>  
+#include <vector>  
+#include <queue>  
+#include <tuple>  
+#include <algorithm>  
+
+using namespace std;  
+
+// 定义花生结构体  
+struct Peanut {  
+    int x, y, count; // 植株的坐标和花生数量  
+    bool operator<(const Peanut& other) const {  
+        return count < other.count; // 按花生数量构建最大堆  
+    }  
+};  
+
+int main() {  
+    int M, N, K;  
+    cin >> M >> N >> K; // 输入花生田的大小和时间限制  
+    vector<vector<int>> peanuts(M, vector<int>(N)); // 存储每个植株下的花生数量  
+
+    // 输入花生数量  
+    for (int i = 0; i < M; ++i) {  
+        for (int j = 0; j < N; ++j) {  
+            cin >> peanuts[i][j];  
+        }  
+    }  
+
+    // 使用最大堆来存储花生数量  
+    priority_queue<Peanut> pq;  
+    for (int i = 0; i < M; ++i) {  
+        for (int j = 0; j < N; ++j) {  
+            if (peanuts[i][j] > 0) { // 只有有花生的植株才加入堆中  
+                pq.push({i, j, peanuts[i][j]});  
+            }  
+        }  
+    }  
+
+    int totalPeanuts = 0; // 记录总共采摘的花生数量  
+    int currentX = 0; // 当前行位置（从路边开始）  
+    int currentY = 0; // 当前列位置（初始为任意列）  
+
+    // 在时间允许的情况下，尽量采摘花生  
+    while (!pq.empty() && K > 0) {  
+        Peanut best = pq.top(); // 获取花生数量最多的植株  
+        pq.pop();  
+
+        // 计算到达该植株的曼哈顿距离  
+        int distToPlant = abs(currentX - best.x) + abs(currentY - best.y);  
+        int timeToPlant = distToPlant + 1; // 跳到植株和采摘所需的时间  
+
+        // 检查是否有足够的时间去采摘  
+        if (K >= timeToPlant) {  
+            totalPeanuts += best.count; // 采摘花生  
+            K -= timeToPlant; // 减去所用时间  
+            currentX = best.x; // 更新当前位置  
+            currentY = best.y;  
+            peanuts[best.x][best.y] = 0; // 标记该植株已被采摘  
+        }  
+    }  
+
+    cout << totalPeanuts << endl; // 输出最大采摘的花生数量  
+    return 0;  
+}
