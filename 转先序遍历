@@ -1,0 +1,40 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+
+
+int findIndex(string &inorder , char root){
+	for (int i = 0 ; i < inorder.size() ; i++){
+		if (inorder[i] == root){
+			return i;
+		}
+	}
+	return -1;
+}
+
+string postOrderToPreOrder(string &inorder, string &postorder){
+	if (inorder.empty()||postorder.empty()){
+		return"";
+	}
+	char root = postorder[postorder.size()-1];
+	int rootIndex = findIndex(inorder, root);
+	string res;
+	res.push_back(root);
+	string leftInorder = inorder.substr(0,rootIndex);
+	string rightInorder = inorder.substr(rootIndex+1);
+	string leftPostorder = postorder.substr(0,rootIndex);
+	string rightPostorder = postorder.substr(rootIndex,inorder.size()-rootIndex-1);
+	string leftPreOrder = postOrderToPreOrder(leftInorder, leftPostorder);
+    string rightPreOrder = postOrderToPreOrder(rightInorder, rightPostorder);
+    return res + leftPreOrder + rightPreOrder; 
+}
+
+int main() {  
+    string inorder;  
+    string postorder;  
+    cin >> inorder >> postorder;  
+    string preOrderResult = postOrderToPreOrder(inorder, postorder);  
+    cout << preOrderResult; 
+    return 0;  
+}  
