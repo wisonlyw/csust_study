@@ -1,0 +1,116 @@
+#include <iostream>  
+#include <iomanip>  
+#include <vector>  
+#include <algorithm>  
+#include <cmath>  
+#include <limits>  
+
+using namespace std;  
+
+// 定义一个点的结构体  
+struct Point {  
+    double x, y;  
+};  
+
+// 比较函数  
+bool compareX(const Point &a, const Point &b) {  
+    return a.x < b.x;  
+}  
+
+bool compareY(const Point &a, const Point &b) {  
+    return a.y < b.y;  
+}  
+
+// 计算两点之间的欧几里得距离  
+double distance(const Point &a, const Point &b) {  
+    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));  
+}  
+
+// 分治法查找最近点对  
+double closestPairUtil(vector<Point> &pointsX, vector<Point> &pointsY) {  
+    int n = pointsX.size();  
+
+    // 基础情况，少于2个点  
+    if (n <= 3) {  
+        double minDist = numeric_limits<double>::max();  
+        for (int i = 0; i < n; i++) {  
+            for (int j = i + 1; j < n; j++) {  
+                minDist = min(minDist, distance(pointsX[i], pointsX[j]));  
+            }  
+        }  
+        return minDist;  
+    }  
+
+    // 中间点  
+    int mid = n / 2;  
+    Point midPoint = pointsX[mid];  
+
+    // 分割点集  
+    vector<Point> pointsYL, pointsYR;  
+    for (int i = 0; i < n; i++) {  
+        if (pointsY[i].x < midPoint.x) {  
+            pointsYL.push_back(pointsY[i]); // 左边部分  
+        } else {  
+            pointsYR.push_back(pointsY[i]); // 右边部分  
+        }  
+    }  
+
+    // 递归查找最近点对  
+    double dl = closestPairUtil(pointsX, pointsYL); // 左部分  
+    double dr = closestPairUtil(pointsX, pointsYR); // 右部分  
+
+    double d = min(dl, dr); // 当前最小距离  
+
+    // 创建数组来保存中间附近的点  
+    vector<Point> strip;  
+    for (int i = 0; i < n; i++) {  
+        if (abs(pointsY[i].x - midPoint.x) < d) {  
+            strip.push_back(pointsY[i]);  
+        }  
+    }  
+
+    // 在 strip 中查找最近的点对  
+    int sizeStrip = strip.size();  
+    for (int i = 0; i < sizeStrip; i++) {  
+        for (int j = i + 1; j < sizeStrip && (strip[j].y - strip[i].y) < d; j++) {  
+            d = min(d, distance(strip[i], strip[j]));  
+        }  
+    }  
+
+    return d;  
+}  
+
+// 主函数  
+double closestPair(vector<Point> &points) {  
+    int n = points.size();  
+
+    // 根据 x 坐标排序  
+    vector<Point> pointsX = points;  
+    sort(pointsX.begin(), pointsX.end(), compareX);  
+
+    // 根据 y 坐标排序  
+    vector<Point> pointsY = points;  
+    sort(pointsY.begin(), pointsY.end(), compareY);  
+
+    // 调用分治法的递归函数  
+    return closestPairUtil(pointsX, pointsY);  
+}  
+
+int main() {  
+    int n;  
+    cin >> n; // 读取点的个数  
+    vector<Point> points(n); // 点的集合  
+
+    // 读取每个点的坐标  
+    for (int i = 0; i < n; ++i) {  
+        cin >> points[i].x >> points[i].y;  
+    }  
+
+    // 计算最近点对的最小距离  
+    double minDist = closestPair(points);  
+
+    // 输出结果，四舍五入保留4位小数  
+    cout << fixed << setprecision(4) << minDist << endl;  
+
+    return 0;  
+}
