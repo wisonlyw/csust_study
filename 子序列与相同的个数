@@ -1,0 +1,27 @@
+class Solution {
+public:
+const int MOD = 1e9 + 7;  
+    int numDistinct(string s, string t) {  
+    int m = s.size(), n = t.size();  
+    vector<vector<long long>> dp(m + 1, vector<long long>(n + 1, 0));  
+
+    // 初始化  
+    dp[0][0] = 1; // 空字符串的情况  
+    for (int i = 1; i <= m; i++) {  
+        dp[i][0] = 1; // 任何字符串中空字符串为1  
+    }  
+
+    // 动态规划  
+    for (int i = 1; i <= m; i++) {  
+        for (int j = 1; j <= n; j++) {  
+            if (s[i - 1] == t[j - 1]) {  
+                dp[i][j] = (dp[i - 1][j - 1] + dp[i - 1][j]) % MOD; // 匹配该字符或不匹配   
+            } else {  
+                dp[i][j] = dp[i - 1][j]; // 不匹配  
+            }  
+        }  
+    }  
+
+    return dp[m][n];  
+} 
+};
