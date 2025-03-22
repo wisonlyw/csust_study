@@ -1,0 +1,41 @@
+#include <iostream>  
+
+class MyClass {  
+public:  
+    int value;  
+
+    // 构造函数  
+    MyClass(int v) : value(v) {}  
+
+    // 成员函数  
+    void display() {  
+        std::cout << "Value: " << value << std::endl;  
+    }  
+};  
+
+int main() {  
+    MyClass obj(10);  
+    obj.display(); // 输出: Value: 10  
+    return 0;  
+}  
+
+#include <iostream>  
+
+class MyClass {  
+public:  
+    static int count;  
+
+    static void increment() {  
+        count++;  
+    }  
+};  
+
+// 静态成员变量定义  
+int MyClass::count = 0;  
+
+int main() {  
+    MyClass::increment();  
+    MyClass::increment();  
+    std::cout << "Count: " << MyClass::count << std::endl; // 输出: Count: 2  
+    return 0;  
+}  
