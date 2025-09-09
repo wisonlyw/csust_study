@@ -1,0 +1,43 @@
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int peopleAwareOfSecret(int n, int delay, int forget) {
+        const int MOD = 1000000007;
+        vector<long> dp(n + 1, 0);    // dp[i]表示第i天新增人数
+        vector<long> diff(n + 2, 0);  // 差分数组
+        
+        // 第1天初始状态
+        dp[1] = 1;
+        diff[1] = 1;
+        diff[2] = -1;
+        
+        for (int i = 1; i <= n; i++) {
+            // 通过差分数组计算当日新增人数
+            dp[i] = (dp[i - 1] + diff[i]) % MOD;
+            
+            if (dp[i] > 0) {
+                int start = i + delay;    // 开始传播的日期
+                int end = i + forget;      // 停止传播的日期
+                
+                if (start <= n) {
+                    // 标记传播开始
+                    diff[start] = (diff[start] + dp[i]) % MOD;
+                    if (end <= n) {
+                        // 标记传播结束
+                        diff[end] = (diff[end] - dp[i] + MOD) % MOD;
+                    }
+                }
+            }
+        }
+        
+        // 统计最后forget天内新增人数（未遗忘者）
+        long res = 0;
+        for (int i = max(1, n - forget + 1); i <= n; i++) {
+            res = (res + dp[i]) % MOD;
+        }
+        return res;
+    }
+};
