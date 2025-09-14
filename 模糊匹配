@@ -1,0 +1,47 @@
+class Solution {
+    string tolower_string(string s) {
+        for (char& c : s) {
+            c = tolower(c);
+        }
+        return s;
+    }
+
+    string replace_vowels(string s) {
+        for (char& c : s) {
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                c = '?';
+            }
+        }
+        return s;
+    }
+
+public:
+    vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
+        int n = wordlist.size();
+        unordered_set<string> origin(wordlist.begin(), wordlist.end());
+        unordered_map<string, string> lower_to_origin;
+        unordered_map<string, string> vowel_to_origin;
+
+        for (int i = n - 1; i >= 0; i--) {
+            string& s = wordlist[i];
+            string lower = tolower_string(s);
+            lower_to_origin[lower] = s; // 例如 kite -> KiTe
+            vowel_to_origin[replace_vowels(lower)] = s; // 例如 k?t? -> KiTe
+        }
+
+        for (string& q : queries) {
+            if (origin.contains(q)) { // 完全匹配
+                continue;
+            }
+            string lower = tolower_string(q);
+            auto it = lower_to_origin.find(lower);
+            if (it != lower_to_origin.end()) { // 不区分大小写的匹配
+                q = it->second;
+            } else { // 不区分大小写+元音模糊匹配
+                auto it = vowel_to_origin.find(replace_vowels(lower));
+                q = it != vowel_to_origin.end() ? it->second : "";
+            }
+        }
+        return queries;
+    }
+};
