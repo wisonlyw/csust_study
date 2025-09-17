@@ -1,0 +1,33 @@
+#include <unordered_map>
+#include <set>
+using namespace std;
+
+class NumberContainers {
+private:
+    unordered_map<int, int> index_map;   // 下标 -> 数字
+    unordered_map<int, set<int>> number_map; // 数字 -> 有序下标集合
+
+public:
+    NumberContainers() {
+    }
+    
+    void change(int index, int number) {
+        if (index_map.find(index) != index_map.end()) {
+            int old_num = index_map[index];
+            if (old_num == number) {
+                return;
+            }
+            number_map[old_num].erase(index);
+        }
+        index_map[index] = number;
+        number_map[number].insert(index);
+    }
+    
+    int find(int number) {
+        auto it = number_map.find(number);
+        if (it != number_map.end() && !it->second.empty()) {
+            return *(it->second.begin());
+        }
+        return -1;
+    }
+};
