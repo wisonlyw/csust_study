@@ -1,0 +1,41 @@
+class TaskManager {
+private:
+    unordered_map<int, int> m;
+    unordered_map<int, int> n;
+    priority_queue<pair<int, int>> q;
+public:
+    TaskManager(vector<vector<int>>& tasks) {
+        for (auto &task : tasks) {
+            add(task[0], task[1], task[2]);
+        }
+    }
+    
+    void add(int userId, int taskId, int priority) {
+        m[taskId] = priority;
+        n[taskId] = userId;
+        q.push({priority, taskId});
+    }
+    
+    void edit(int taskId, int newPriority) {
+        m.find(taskId)->second = newPriority;
+        q.push({newPriority, taskId});
+    }
+    
+    void rmv(int taskId) {
+        m.find(taskId)->second = -1;
+        n.find(taskId)->second = -1;
+    }
+    
+    int execTop() {
+        while (!q.empty() && q.top().first != m.find(q.top().second)->second) {
+            q.pop();
+        }
+        if (q.empty()) {
+            return -1;
+        }
+        auto tmp = n.find(q.top().second)->second;
+        rmv(q.top().second);
+        q.pop();
+        return tmp;
+    }
+};
