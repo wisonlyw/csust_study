@@ -1,0 +1,74 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+// 通常需要根据问题定义dp数组的维度和大小，以及状态state的类型
+// 例如：dp[位置][状态][是否受限][是否有前导零]？实际维度需依问题而定
+ll dp[20][200][2][2]; // 示例：20位数，200的状态空间，2种布尔限制（实际状态设计因题而异）
+vector<int> digits;
+
+// 将数字n分解为各个数位（高位在前）
+vector<int> get_digits(ll n) {
+    vector<int> d;
+    while (n) {
+        d.push_back(n % 10);
+        n /= 10;
+    }
+    reverse(d.begin(), d.end());
+    return d;
+}
+
+// 核心DFS函数
+// pos: 当前处理到的位置（从0开始，高位优先）
+// state: 当前状态（例如数字和、前一位数字、模数结果、位掩码等，类型和含义因题而异）
+// is_limit: 当前位是否受到上界限制（即前面的位是否都取到了最大值）
+// is_lead: 当前位之前是否都是前导零（这会影响状态计算和后续决策，例如数字0的计数）
+ll dfs(int pos, int state, bool is_limit, bool is_lead) {
+    // 递归终止条件：所有数位处理完毕
+    if (pos == digits.size()) {
+        return check(state); // check函数根据最终状态判断是否得到一个合法数字，返回1或0
+    }
+    
+    // 记忆化检索：如果当前状态已经计算过且没有上界限制且无前导零问题（通常这些情况下状态可复用），则直接返回结果
+    // 注意：是否记忆化以及记忆化的条件需根据问题调整，通常不受限且无前导零的状态可复用
+    if (!is_limit && !is_lead && dp[pos][state][is_limit][is_lead] != -1) {
+        return dp[pos][state][is_limit][is_lead];
+    }
+    
+    ll res = 0;
+    int upper_bound = is_limit ? digits[pos] : 9; // 当前位可填数字的上界
+    
+    for (int d = 0; d <= upper_bound; ++d) {
+        bool new_is_limit = is_limit && (d == upper_bound);
+        bool new_is_lead = is_lead && (d == 0);
+        
+        int new_state = update_state(state, d, is_lead); // 根据当前状态、当前位数字d和前导零标志更新状态
+        
+        res += dfs(pos + 1, new_state, new_is_limit, new_is_lead);
+    }
+    
+    // 记忆化存储：通常只在无上界限制且无前导零时存储当前状态，避免状态冲突
+    if (!is_limit && !is_lead) {
+        dp[pos][state][is_limit][is_lead] = res;
+    }
+    return res;
+}
+
+// 计算[0, n]范围内满足条件的数字个数
+ll solve(ll n) {
+    if (n < 0) return 0;
+    digits = get_digits(n);
+    memset(dp, -1, sizeof(dp)); // 初始化DP数组为-1
+    return dfs(0, 0, true, true); // 初始状态：位置0，状态0，受限制，有前导零
+}
+
+int main() {
+    ll L, R;
+    cin >> L >> R;
+    // 常见用法：求[L, R]区间内的数量，转化为[0,R]的数量减去[0,L-1]的数量
+    cout << solve(R) - solve(L - 1) << endl;
+    return 0;
+}
