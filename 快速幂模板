@@ -1,13 +1,13 @@
 typedef long long LL;
 
 LL quickPow(LL base, LL index) {
-LL result = 1;
-while (index) {
-if (index & 1) {
-result *= base; // 如果指数的最后一位是1，则将当前的底数乘到结果中
-}
-base *= base; // 每一步都将底数平方
-index >>= 1; // 指数右移一位，相当于除以2
-}
-return result;
+    LL result = 1;
+    while (index) {
+        if (index & 1) {
+            result *= base; // 如果指数的最后一位是1，则将当前的底数乘到结果中
+        }
+        base *= base; // 每一步都将底数平方
+        index >>= 1; // 指数右移一位，相当于除以2
+    }
+    return result;
 }
