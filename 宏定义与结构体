@@ -1,0 +1,39 @@
+#include <iostream>
+#include <map>
+#include <cstring>
+#include <string>
+using namespace std;
+
+#define ll long long
+#define maxd 65          // 最大数位（十进制65位足够覆盖大整数）
+#define MEMORY_USE_MAP   // 启用map记忆化（灵活处理状态，避免数组大小限制）
+
+// 自定义DP状态：存储状态机进度和是否找到模式串
+struct DpData {
+    ll data0;  // 状态机进度（0~6，对应匹配模式串的0~6个字符）
+    ll data1;  // 是否已找到模式串（1=是，0=否）
+    static ll K;    // 预留参数（本题未用）
+    static ll base; // 进制（十进制=10）
+
+    // 构造函数
+    DpData(): data0(0), data1(0) { init(); }
+    DpData(ll d0, ll d1): data0(d0), data1(d1) {}
+
+    // map排序需要的比较运算符
+    bool operator<(const DpData&amp; d) const {
+        return data0 != d.data0 ? data0 < d.data0 : data1 < d.data1;
+    }
+
+    // 自定义逻辑：初始化DP状态
+    void init() { data0 = 0; data1 = 0; }
+    // 自定义逻辑：递归出口返回值
+    ll dfsReturn(bool is_leadingzero) const {
+        return is_leadingzero ? 0 : data1; // 前导零视为无意义，返回0
+    }
+    // 自定义逻辑：状态转移
+    DpData getNextDpData(bool is_leadingzero, int digit) const;
+};
+
+// 静态成员初始化
+ll DpData::K = 0;
+ll DpData::base = 10;
