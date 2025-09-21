@@ -1,0 +1,28 @@
+# include <iostream>
+# include <stdlib.h>
+# include <algorithm>
+
+using namespace std;
+
+int n;
+long long a[1000005],ave,s[1000005];
+
+bool cmp(long long a,long long b){return a<b;}
+long long abs_(long long x){return x>0?x:-x;}
+
+int main(){
+	cin>>n;long long ans=0;
+	for(int i=1;i<=n;i++){
+		scanf("%lld",&a[i]);
+		ave+=a[i];
+	}
+	ave/=n;
+	for(int i=1;i<=n;i++){
+		a[i]-=ave;
+		s[i]=s[i-1]+a[i];
+	}
+	sort(s+1,s+n+1,cmp);
+	for(int i=1;i<=n;i++)
+		ans+=abs_(s[i]-s[(n+1)/2]);
+	return printf("%lld",ans),0;
+}
