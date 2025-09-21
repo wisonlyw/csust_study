@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    long long n, m;
+    cin >> n >> m;
+    vector<pair<long long, long long>> nums(n);
+    for (int i = 0; i < n; i++) {
+        long long l, r;
+        cin >> l >> r;
+        nums[i] = {l, r};
+    }
+
+    vector<vector<long long>> dp(n, vector<long long>(m + 1, 0));
+    vector<long long> pre(m + 1, 0);
+
+    // 初始化第一种物品
+    long long l0 = nums[0].first, r0 = nums[0].second;
+    for (long long j = l0; j <= min(r0, m); j++) {
+        dp[0][j] = 1;
+    }
+
+    // 计算第一种物品的前缀和
+    pre[0] = dp[0][0];
+    for (int j = 1; j <= m; j++) {
+        pre[j] = pre[j - 1] + dp[0][j];
+    }
+
+    // 处理后续物品
+    for (int i = 1; i < n; i++) {
+        vector<long long> new_pre(m + 1, 0);
+        long long l = nums[i].first, r = nums[i].second;
+        for (int j = 0; j <= m; j++) {
+            if (j < l) {
+                dp[i][j] = 0;
+            } else {
+                long long low = max(0LL, j - r);
+                long long high = j - l;
+                if (low > high) {
+                    dp[i][j] = 0;
+                } else {
+                    long long sum_low = (low > 0) ? pre[low - 1] : 0;
+                    long long sum_high = pre[high];
+                    dp[i][j] = sum_high - sum_low;
+                }
+            }
+            // 计算新前缀和
+            new_pre[j] = (j > 0) ? new_pre[j - 1] + dp[i][j] : dp[i][j];
+        }
+        pre = new_pre; // 更新前缀和用于下一次迭代
+    }
+
+    cout << dp[n - 1][m] << endl;
+    return 0;
+}
