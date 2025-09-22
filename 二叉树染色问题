@@ -1,0 +1,73 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll MOD = 1e9+7;
+const int MAX_N = 5005; // 假设n和k的最大值为5000
+
+// 预计算阶乘和阶乘逆元
+ll fact[MAX_N], inv_fact[MAX_N];
+
+// 快速幂函数
+ll pow_mod(ll a, ll b, ll mod) {
+    ll res = 1;
+    while (b) {
+        if (b & 1) res = res * a % mod;
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return res;
+}
+
+// 初始化阶乘和阶乘逆元数组
+void init() {
+    fact[0] = 1;
+    for (int i = 1; i < MAX_N; i++) {
+        fact[i] = fact[i-1] * i % MOD;
+    }
+    // 使用费马小定理计算阶乘逆元
+    inv_fact[MAX_N-1] = pow_mod(fact[MAX_N-1], MOD-2, MOD);
+    for (int i = MAX_N-2; i >= 0; i--) {
+        inv_fact[i] = inv_fact[i+1] * (i+1) % MOD;
+    }
+}
+
+// 组合数计算，使用预计算的阶乘和逆元
+ll nCr(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    return fact[n] * inv_fact[r] % MOD * inv_fact[n-r] % MOD;
+}
+
+// 排列数计算
+ll nPr(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    return fact[n] * inv_fact[n-r] % MOD;
+}
+
+ll solve(int n, int k) {
+    ll rs = 0;
+    for (int i = 1; i <= k; i++) {
+        // 计算组合数C(i-1, n-1)和排列数P(k, i)
+        ll a = nCr(n-1, i-1); // 注意参数顺序调整
+        ll b = nPr(k, i);
+        rs = (rs + a * b % MOD) % MOD;
+    }
+    return rs;
+}
+
+int main() {
+    init(); // 初始化阶乘和逆元数组
+    
+    int n, k;
+    cin >> n >> k;
+    
+    // 读取图结构（虽然未使用，但保留原代码结构）
+    vector<vector<int>> edge(n+1, vector<int>(n+1, 0));
+    for (int i = 0; i < n - 1; i++) {
+        int x, y;
+        cin >> x >> y;
+        edge[x][y] = 1;
+    }
+    
+    cout << solve(n, k) << endl;
+    return 0;
+}
