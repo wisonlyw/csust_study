@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Point {
+    double x, y;
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
+    bool operator<(const Point& other) const {
+        return x < other.x || (x == other.x && y < other.y);
+    }
+};
+
+// 计算叉积：AB × AC
+double cross(const Point& A, const Point& B, const Point& C) {
+    return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+}
+
+vector<Point> andrewConvexHull(vector<Point>& points) {
+    int n = points.size();
+    if (n <= 1) return points; // 点数为0或1时直接返回
+
+    // 按x坐标排序，x相同则按y排序
+    sort(points.begin(), points.end());
+
+    vector<Point> hull; // 存储凸包点
+    // 构建下凸壳
+    for (int i = 0; i < n; i++) {
+        // 如果新点导致非左转（叉积<=0），则弹出栈顶点
+        while (hull.size() >= 2 && 
+               cross(hull[hull.size()-2], hull.back(), points[i]) <= 0) {
+            hull.pop_back();
+        }
+        hull.push_back(points[i]);
+    }
+
+    // 构建上凸壳（从倒数第二个点开始）
+    int lower_size = hull.size(); // 下凸壳的大小
+    for (int i = n - 2; i >= 0; i--) {
+        // 确保栈中至少有两个点，且新点不会导致非左转
+        while (hull.size() > lower_size && 
+               cross(hull[hull.size()-2], hull.back(), points[i]) <= 0) {
+            hull.pop_back();
+        }
+        hull.push_back(points[i]);
+    }
+
+    // 移除重复的起点（首尾相同）
+    if (hull.size() > 1) hull.pop_back();
+    return hull;
+}
+
+int main() {
+    // 测试数据
+    vector<Point> points = {
+        Point(0, 0),
+        Point(1, 1),
+        Point(2, 2),
+        Point(3, 3),
+        Point(1, 2),
+        Point(0, 3),
+        Point(3, 0)
+    };
+
+    vector<Point> convex = andrewConvexHull(points);
+    cout << "Convex Hull Points:" << endl;
+    for (const Point& p : convex) {
+        cout << "(" << p.x << ", " << p.y << ")" << endl;
+    }
+    return 0;
+}
