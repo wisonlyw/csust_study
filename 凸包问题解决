@@ -1,0 +1,57 @@
+class Solution {
+public:
+    struct Point{
+        int x , y;
+        Point(int x , int y):x(x),y(y){}
+        bool operator<(const Point &other){
+            return x < other.x || (x == other.x && y < other.y);
+        }
+    };
+
+    double cross(const Point& A, const Point& B, const Point& C) {
+        return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+    }
+
+    vector<vector<int>> outerTrees(vector<vector<int>>& trees) {
+        int n = trees.size();
+        if (n <= 1) return trees;
+        vector<Point>points;
+        for (int i = 0 ; i < n ; i++){
+            Point p(trees[i][0],trees[i][1]);
+            points.push_back(p);
+        }
+        sort(points.begin(),points.end());
+        vector<Point>hull;
+        for (int i = 0 ; i < n ; i++){
+            while (hull.size() >= 2 && cross(hull[hull.size()-2],hull.back(),points[i]) < 0){
+                 hull.pop_back();
+            }
+            hull.push_back(points[i]);
+        }
+        int lower_size = hull.size(); // 下凸壳的大小
+        for (int i = n - 2; i >= 0; i--) {
+            // 确保栈中至少有两个点，且新点不会导致非左转
+            while (hull.size() > lower_size && 
+                cross(hull[hull.size()-2], hull.back(), points[i]) < 0) {
+                hull.pop_back();
+            }
+            hull.push_back(points[i]);
+        }
+        // 移除重复的起点（首尾相同）
+        sort(hull.begin(), hull.end());
+        //如何去重复呢，只会重复一次
+        // 移动重复元素到末尾
+        auto last = unique(hull.begin(), hull.end(), 
+            [](const Point& a, const Point& b) {
+                return a.x == b.x && a.y == b.y;
+            });
+
+        // 实际删除重复元素
+        hull.erase(last, hull.end());
+        vector<vector<int>>ans;
+        for (int i = 0 ; i < hull.size() ; i++){
+            ans.push_back({hull[i].x,hull[i].y});
+        }
+        return ans;
+    }
+};
