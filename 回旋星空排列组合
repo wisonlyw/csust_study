@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+ 
+int pow_dis(int x1 , int y1 , int x2 , int y2){
+    int dx = x1 - x2;
+    int dy = y1 - y2;
+    return dx*dx+dy*dy;
+}
+ 
+int main(){
+    int T;
+    cin >> T;
+    while (T--){
+        int n;
+        cin >> n;
+        vector<int>x(n);
+        vector<int>y(n);
+        int res = 0;
+        for (int i = 0 ; i < n ; i++){
+            cin >> x[i] >> y[i];
+        }
+        for (int i = 0 ; i < n ; i++){
+            vector<int>dis;
+            for (int j = 0 ; j < n ; j++){
+                if (j == i)    continue;
+                int r = pow_dis(x[i],y[i],x[j],y[j]);
+                dis.push_back(r);
+            }
+            sort(dis.begin(),dis.end());
+            int count = 1;
+            for (int i = 1 ; i < dis.size() ; i++){
+                if (dis[i] == dis[i-1]){
+                    count++;
+                }else{
+                    if (count >= 2){
+                        res += count * (count-1);
+                    }
+                    count = 1;
+                }
+            }
+            if (count >= 2){
+                res += count * (count-1);
+            }
+        }
+        if (res == 0){
+            cout << "WA" << endl;
+        }else{
+            cout << res << endl;
+        }
+    }
+    return 0;
+}
