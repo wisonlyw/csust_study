@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int maxPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        if (n == 1){
+            return 1;
+        }
+        int ans = 0;
+        for (int i = 0 ; i < n ; i++){
+            vector<double>slope;
+            for (int j = i + 1 ; j < n ; j++){
+                double dx = points[i][0] - points[j][0];
+                double dy = points[i][1] - points[j][1];
+                if (dx == 0){
+                    slope.push_back(6666666);
+                    continue;
+                }
+                double k = dy / dx;
+                slope.push_back(k);
+            }
+            sort(slope.begin(),slope.end());
+            int count = 2;
+            for (int j = 1 ; j < slope.size() ; j++){
+                if (slope[j] == slope[j-1]){
+                    count++;
+                }else{
+                    ans = max(ans,count);
+                    count = 2;                   
+                }
+            }
+            ans = max(ans,count);   
+        }
+        return ans;
+    }
+};
