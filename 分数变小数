@@ -1,0 +1,27 @@
+string fractionToDecimal(long numerator, long denominator) {
+    if (numerator == 0) return "0";
+    string res;
+    bool isNeg = (numerator < 0) ^ (denominator < 0);
+    long num = abs(numerator), den = abs(denominator);
+    
+    // 整数部分
+    res += to_string(num / den);
+    num %= den;
+    if (num == 0) return isNeg ? "-" + res : res;
+    
+    // 小数部分
+    res += '.';
+    unordered_map<long, int> seen; // 存储余数及其出现位置
+    while (num) {
+        if (seen.count(num)) {
+            res.insert(seen[num], "(");
+            res += ')';
+            break;
+        }
+        seen[num] = res.size();
+        num *= 10;
+        res += to_string(num / den);
+        num %= den;
+    }
+    return isNeg ? "-" + res : res;
+}
