@@ -1,3 +1,4 @@
+//核心思想 余数重复出现代表着 出现循环节
 string fractionToDecimal(long numerator, long denominator) {
     if (numerator == 0) return "0";
     string res;
