@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <set>
+using namespace std;
+
+struct Node {
+    int val;
+    int init_pos;
+    int target_pos;
+};
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+
+    // 创建值的初始位置映射：值对应的初始位置（从1开始）
+    map<int, int> init_pos_map;
+    for (int i = 0; i < n; i++) {
+        init_pos_map[a[i]] = i+1;
+    }
+
+    // 排序数组a得到目标位置
+    vector<int> sorted_a = a;
+    sort(sorted_a.begin(), sorted_a.end());
+    map<int, int> target_pos_map;
+    for (int i = 0; i < n; i++) {
+        target_pos_map[sorted_a[i]] = i+1;
+    }
+
+    // 构建Node列表
+    vector<Node> nodes;
+    for (int i = 0; i < n; i++) {
+        int val = a[i];
+        nodes.push_back({val, init_pos_map[val], target_pos_map[val]});
+    }
+
+    // 按值模k余数分组
+    map<int, vector<Node>> groups;
+    for (auto node : nodes) {
+        int r = node.val % k;
+        groups[r].push_back(node);
+    }
+
+    // 对于每个组，按值排序
+    for (auto &entry : groups) {
+        auto &vec = entry.second;
+        sort(vec.begin(), vec.end(), [](const Node &a, const Node &b) {
+            return a.val < b.val;
+        });
+    }
+
+    // 遍历每个组，划分连通分量
+    vector<vector<Node>> components;
+    for (auto &entry : groups) {
+        auto &vec = entry.second;
+        if (vec.empty()) continue;
+        vector<Node> comp;
+        comp.push_back(vec[0]);
+        for (int i = 1; i < vec.size(); i++) {
+            if (vec[i].val - vec[i-1].val == k) {
+                comp.push_back(vec[i]);
+            } else {
+                components.push_back(comp);
+                comp.clear();
+                comp.push_back(vec[i]);
+            }
+        }
+        components.push_back(comp);
+    }
+
+    // 检查每个连通分量
+    for (auto &comp : components) {
+        set<int> residues;
+        for (auto &node : comp) {
+            int r_init = node.init_pos % k;
+            residues.insert(r_init);
+        }
+        for (auto &node : comp) {
+            int r_target = node.target_pos % k;
+            if (residues.find(r_target) == residues.end()) {
+                cout << "No" << endl;
+                return 0;
+            }
+        }
+    }
+
+    cout << "Yes" << endl;
+    return 0;
+}
