@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int triangleNumber(vector<int>& nums) {
+        //一条大边 一条小边
+        sort(nums.begin(),nums.end());
+        int n = nums.size();
+        int res = 0;
+       for (int i = 2 ; i < n ; i++){
+            int l = 0;
+            int r = i-1;
+            while (l < r){
+                if (nums[i] < nums[l] + nums[r]){
+                    res += r - l;
+                    r--;
+                }else{
+                    l++;
+                }
+            }
+       }
+       return res;
+    }
+};
