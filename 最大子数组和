@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n;
+        n = nums.size();
+        vector<int>hash(n+1,0);
+        for (int i = 1 ; i < n+1 ; i++){
+            hash[i] = hash[i-1] + nums[i-1];
+        }
+        int minv = 10000000;
+        int res = -100000;
+        for (int i = 1 ; i < n+1 ; i++){
+            minv = min(hash[i-1],minv);
+            res = max(hash[i]-minv,res);
+        }
+        return res;
+    }
+};
