@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// 小幅修改：用更简单、正确的公式计算最短时间。
+// 观察：对于位于 pos[i] 到 pos[i+1] 的每一段，如果在到达 pos[i] 时前缀和 prefix[i] < 0，
+// 说明该段需要从右侧运货到左侧，必然会被往返走一次（来回），额外代价为该段长度。
+// 因此答案为：pos[n-1] + 2 * sum_{i=0..n-2, prefix[i] < 0} (pos[i+1] - pos[i])
+
+
+int main(){
+ios::sync_with_stdio(false);
+cin.tie(nullptr);
+
+
+int n;
+if (!(cin >> n)) return 0;
+vector<long long> pos(n), delta(n);
+for (int i = 0; i < n; ++i) cin >> pos[i];
+for (int i = 0; i < n; ++i) cin >> delta[i];
+
+
+vector<long long> prefix(n);
+prefix[0] = delta[0];
+for (int i = 1; i < n; ++i) prefix[i] = prefix[i-1] + delta[i];
+
+
+long long extra = 0; // 需要往返的总段长
+for (int i = 0; i + 1 < n; ++i){
+if (prefix[i] < 0) extra += (pos[i+1] - pos[i]);
+}
+
+
+long long ans = pos[n-1] + 2 * extra;
+cout << ans << '\n';
+return 0;
+}
