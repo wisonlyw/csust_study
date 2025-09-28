@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+    vector<vector<int>>graph(n);
+    for (int i = 0 ; i < n - 1 ; i++){
+        long long u , v;
+        cin >> u >> v;
+        --u , --v;
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
+    vector<long long>depth(n,-1);
+    queue<long long>q;
+    q.push(0);
+    depth[0] = 0;
+    long long evenCount = 0, oddCount = 0;
+    while (!q.empty()){
+        int u = q.front();
+        q.pop();
+        if (depth[u] % 2 == 0){
+            evenCount++;
+        }else{
+            oddCount++;
+        }
+        for (int v : graph[u]){
+            if (depth[v] == -1) {
+                depth[v] = depth[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    long long paths = (evenCount * (evenCount - 1)) / 2 + (oddCount * (oddCount - 1)) / 2;
+    cout << paths << endl;
+    return 0;
+}
