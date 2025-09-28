@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+    int n , d;
+    cin >> n >> d;
+    string s;
+    cin >> s;
+    long long res = 1000000000; 
+    for (int i = 1 ; i < pow(2,n) ; i++){
+        int tmp = i;
+        vector<int>nums;
+        int cnt = 0;
+        while (tmp){
+            if (tmp & 1){
+                nums.push_back(s[cnt]-'0');
+            }
+            tmp >>= 1;
+            cnt++;
+        }
+        sort(nums.begin(),nums.end());
+        do{
+            long long ans = 0;
+            for (int i = 0 ; i < nums.size() ; i++){
+                ans = ans * 10 + nums[i];
+            }
+            if (ans % d == 0){
+                res = min(ans,res);
+            }
+        }while(next_permutation(nums.begin(),nums.end()));
+    }
+    if (res == 1000000000){
+        cout << -1;
+    }else{
+        cout << res;
+    }
+    return 0;
+}
