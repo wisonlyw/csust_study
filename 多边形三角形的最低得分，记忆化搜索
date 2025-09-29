@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int dfs(int i , int j , vector<int>& values , vector<vector<int>>&memo){
+        if (j - i < 2){
+            return 0;
+        }
+        if (memo[i][j] != -1){
+            return memo[i][j];
+        }
+        int minScore = 100000000;
+        for (int k = i + 1 ; k < j ; k++){
+            int currentScore = values[i] * values[j] * values[k] + dfs(i, k , values , memo) + dfs(k, j , values , memo);
+            minScore = min(minScore,currentScore);
+        }
+        return minScore;
+    }
+    int minScoreTriangulation(vector<int>& values) {
+        int n = values.size();
+        vector<vector<int>>memo(n,vector<int>(n,-1));
+        return dfs(0,n-1,values,memo);
+    }
+};
