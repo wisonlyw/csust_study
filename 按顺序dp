@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int minScoreTriangulation(vector<int>& values) {
+        int n = values.size();
+        if (n < 3) return 0;
+
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+
+        // 区间长度从 2 开始（i, j 相差 2 时只有一个三角形）
+        for (int len = 2; len < n; ++len) {
+            for (int i = 0; i + len < n; ++i) {
+                int j = i + len;
+                dp[i][j] = INT_MAX;
+                for (int k = i + 1; k < j; ++k) {
+                    dp[i][j] = min(dp[i][j],
+                                   values[i] * values[k] * values[j]
+                                   + dp[i][k] + dp[k][j]);
+                }
+            }
+        }
+
+        return dp[0][n - 1];
+    }
+};
