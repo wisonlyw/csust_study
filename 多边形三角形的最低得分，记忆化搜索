@@ -12,7 +12,7 @@ public:
             int currentScore = values[i] * values[j] * values[k] + dfs(i, k , values , memo) + dfs(k, j , values , memo);
             minScore = min(minScore,currentScore);
         }
-        return minScore;
+        return memo[i][j] = minScore;
     }
     int minScoreTriangulation(vector<int>& values) {
         int n = values.size();
