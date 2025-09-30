@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+using namespace std;
+
+int n, k; // n: 任务数, k: 机器数
+vector<int> taskTimes; // 每个任务所需时间
+vector<int> machineLoad; // 每台机器的当前负载（累计时间）
+int bestTime = INT_MAX; // 最优完成时间
+
+void backtrack(int taskIndex) {
+    // 递归终止条件：所有任务都已分配
+    if (taskIndex == n) {
+        int currentMaxTime = *max_element(machineLoad.begin(), machineLoad.end());
+        bestTime = min(bestTime, currentMaxTime);
+        return;
+    }
+
+    // 尝试将当前任务(taskIndex)分配给每一台机器
+    for (int i = 0; i < k; i++) {
+        // **剪枝**：如果当前机器的负载加上新任务的时间已经大于等于已知最优解，则跳过
+        if (machineLoad[i] + taskTimes[taskIndex] >= bestTime) {
+            continue;
+        }
+
+        machineLoad[i] += taskTimes[taskIndex]; // 分配任务
+        backtrack(taskIndex + 1); // 递归分配下一个任务
+        machineLoad[i] -= taskTimes[taskIndex]; // 回溯，撤销分配
+    }
+}
+
+int main() {
+    cin >> n >> k;
+    taskTimes.resize(n);
+    machineLoad.resize(k, 0); // 初始化机器负载为0
+
+    for (int i = 0; i < n; i++) {
+        cin >> taskTimes[i];
+    }
+
+    // **重要优化**：将任务按耗时从大到小排序，有利于提前触发剪枝，提升效率[7](@ref)
+    sort(taskTimes.begin(), taskTimes.end(), greater<int>());
+
+    backtrack(0);
+    cout << "最小总完成时间为: " << bestTime << endl;
+    return 0;
+}
