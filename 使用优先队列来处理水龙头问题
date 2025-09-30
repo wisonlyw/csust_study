@@ -1,0 +1,34 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<int> w(n);
+    for (int i = 0; i < n; i++) {
+        cin >> w[i];
+    }
+    
+    priority_queue<int, vector<int>, greater<int>> pq;
+    for (int i = 0; i < m; i++) {
+        pq.push(0);
+    }
+    
+    for (int i = 0; i < n; i++) {
+        int min_time = pq.top();
+        pq.pop();
+        pq.push(min_time + w[i]);
+    }
+    
+    int ans = 0;
+    while (!pq.empty()) {
+        ans = max(ans, pq.top());
+        pq.pop();
+    }
+    
+    cout << ans << endl;
+    return 0;
+}
