@@ -1,29 +1,53 @@
-#include<bits/stdc++.h>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 long long ans = 0;
-stack<int>big;
-void solve(int num , int k , int step, int sum){
-	if (sum > num || k - step > num - sum || step > k){
-		return;
-	} 
-	if (step == k && sum == num){
-		ans++;
-		return;
-	}
-	for (int i = max(big.top(),1); i <= num - sum ; i++){
-		big.push(i);
-		solve(num,k,step+1,sum+i);
-		big.pop();	
-	}
+stack<int> big;
+
+void solve(int num, int k, int step, int sum) {
+    // 边界剪枝：已经超出目标，或已用超出步数，或当前和已达不到目标
+    if (sum > num || step > k) return;
+
+    // 当前允许的最小下一项
+    int last = max(1, big.empty() ? 1 : big.top());
+
+    // 剩余的步数和需要达到的和
+    int rem = k - step;
+
+    // 如果还需要继续（rem >= 1），基于最小下界进行剪枝
+    if (rem > 0) {
+        long long min_possible = sum + 1LL * rem * last;
+        if (min_possible > num) return; // 即使后续都取最小也超出
+    }
+
+    // 当前位置已满 k 步，判断是否恰好等于 num
+    if (step == k) {
+        if (sum == num) ans++;
+        return;
+    }
+
+    // 上界约束：为了让后续和仍有可能达到 num，选取的当前值 i 不能太大
+    int max_i;
+    if (rem > 0) {
+        max_i = (num - sum) / rem; // 不能超过这个上界
+    } else {
+        max_i = num - sum;
+    }
+    if (max_i < last) return; // 无法继续
+
+    for (int i = last; i <= max_i; ++i) {
+        big.push(i);
+        solve(num, k, step + 1, sum + i);
+        big.pop();
+    }
 }
 
-int main(){
-	int n , k;
-	cin >> n >> k;
-	big.push(0);
-	solve(n,k,0,0);
-	cout << ans;
-	return 0;
+int main() {
+    int n, k;
+    if (!(cin >> n >> k)) return 0;
+    // 初始化下界为 1
+    big.push(0); // 占位，确保 big.top() 不为负
+    solve(n, k, 0, 0);
+    cout << ans << "\n";
+    return 0;
 }
