@@ -1,0 +1,29 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+long long ans = 0;
+stack<int>big;
+void solve(int num , int k , int step, int sum){
+	if (sum > num || k - step > num - sum || step > k){
+		return;
+	} 
+	if (step == k && sum == num){
+		ans++;
+		return;
+	}
+	for (int i = max(big.top(),1); i <= num - sum ; i++){
+		big.push(i);
+		solve(num,k,step+1,sum+i);
+		big.pop();	
+	}
+}
+
+int main(){
+	int n , k;
+	cin >> n >> k;
+	big.push(0);
+	solve(n,k,0,0);
+	cout << ans;
+	return 0;
+}
