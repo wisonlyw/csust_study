@@ -1,0 +1,45 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+	int t;
+	cin >> t;
+	while (t--){
+		long long n , k;
+		cin >> n >> k;
+		vector<long long>nums(n,0);
+		for (int i = 0 ; i < n ; i++){
+			cin >> nums[i];
+		}
+		//分成一部分直接输出 
+		if (n == 1){
+			cout << nums[0]+k << endl;
+			continue;
+		}
+		//奇数就直接变为偶数呗
+		if (k % 2 == 1){
+			for (int i = 0 ; i < n ; i++){
+				if (nums[i] % 2 == 1){
+					nums[i] += k;
+				}
+			}
+		//如果输出是偶数呢 	
+		}else{
+			for (int i = 0 ; i < n ; i++){
+				if (nums[i] % (k+1) == 0){
+					continue;
+				}
+				long long tmp = nums[i];
+				nums[i] %= (k+1);
+				nums[i] *= k;
+				nums[i] += tmp;
+			}
+		}
+		for (int i = 0 ; i < n ; i++){
+			cout << nums[i] << " ";
+		} 
+		cout << endl;
+	}
+	return 0;
+}
