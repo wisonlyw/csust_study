@@ -1,0 +1,47 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main(){
+	int t;
+	cin >> t;
+	while (t--){
+		long long n , k;
+		cin >> n >> k;
+		vector<long long>nums(n,0);
+		unordered_map<long long , long long>hash;
+		for (int i = 0 ; i < n ; i++){
+			cin >> nums[i];
+			hash[nums[i]]++;
+		}
+		if (n % k > 0){
+			cout << 0 << endl;
+			continue;
+		}
+		bool isBreak = false;
+		for (auto it : hash){
+			if (it.second % k > 0){
+				isBreak = true;
+				break;
+			}
+		}
+		if (isBreak){
+			cout << 0 << endl;
+			continue;
+		}
+		int l = 0 , r = 0;
+		long long ans = 0;
+		unordered_map<long long,long long>mp;
+		while (r < n) {
+    		mp[nums[r]]++;
+		    while (mp[nums[r]] * k > hash[nums[r]]) {
+		        mp[nums[l]]--;
+		        l++;
+		    }
+		    ans += r - l + 1;
+		    r++;
+		}
+		cout << ans << endl;
+	}
+	return 0;
+}
