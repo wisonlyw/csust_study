@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    long long T;
+    if (!(cin >> T)) return 0;
+    while (T--){
+        long long n;
+        cin >> n;
+        vector<long long> nums(n);
+        unordered_map<long long,long long> cnt;
+        for (int i = 0; i < n; ++i){
+            cin >> nums[i];
+            cnt[nums[i]]++;
+        }
+
+        bool bad = false;
+        for (auto &p : cnt){
+            long long v = p.first;
+            long long c = p.second;
+            if (c % v != 0){
+                bad = true; break;
+            }
+        }
+        if (bad){
+            cout << -1 << '\n';
+            continue;
+        }
+
+        // curLabel[v] : 当前正在填充的组号 (当 assigned[v]==0 时需要分配新组号)
+        unordered_map<long long,int> curLabel;
+        // assigned[v] : 当前这个组已经填充的数量（0..v-1）
+        unordered_map<long long,int> assigned;
+        vector<int> ans; ans.reserve(n);
+        int label = (int)n; // 从 n 向下分配（任意可行编号）
+
+        for (int i = 0; i < n; ++i){
+            long long v = nums[i];
+            if (assigned[v] == 0){    // 需要开新组号
+                curLabel[v] = label;
+                label--;
+            }
+            ans.push_back(curLabel[v]);
+            assigned[v] += 1;
+            if (assigned[v] == v){
+                assigned[v] = 0; // 该组满，下次遇到 v 开新组
+            }
+        }
+
+        for (int i = 0; i < (int)ans.size(); ++i){
+            if (i) cout << ' ';
+            cout << ans[i];
+        }
+        cout << '\n';
+    }
+    return 0;
+}
