@@ -1,0 +1,41 @@
+#include <iostream>
+#include <vector>
+#include <algorithm> // 用于max函数
+using namespace std;
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        cin >> n;
+        vector<int> nums(n);
+        // 将向量数组的大小设为n+1，因为数字范围是1..n，避免可能的越界
+        vector<int> v[n + 5]; 
+        vector<int> dp(n, 0); // dp[i]表示处理到第i个位置（索引i）时的最大价值
+
+        for (int i = 0; i < n; i++) { // 索引从0开始
+            cin >> nums[i];
+            int x = nums[i];
+            v[x].push_back(i); // 记录数字x出现的位置
+
+            // 核心状态转移：
+            // 1. 基础情况：不选择以当前位置结尾的分组，继承前一个状态的值
+            if (i > 0) {
+                dp[i] = dp[i-1];
+            }
+            // 2. 优化情况：如果当前数字x的出现次数足够组成一个分组
+            if (v[x].size() >= x) {
+                // 计算这个分组的起始位置的前一个位置
+                int start_index_of_group = v[x][v[x].size() - x];
+                // 该分组起始位置的前一个状态值
+                int prev_dp = (start_index_of_group > 0) ? dp[start_index_of_group - 1] : 0;
+                // 尝试用“前一个状态的值 + 当前分组价值x”来更新当前状态
+                dp[i] = max(dp[i], prev_dp + x);
+            }
+        }
+        // 输出最后一个状态的值，即整个数组的最大价值
+        cout << dp[n-1] << endl;
+    }
+    return 0;
+}
