@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int edgeX[1000] = {0};
+int edgeY[1000] = {0};
+
+int main(){
+	int M,N,K,L,D;
+	//一定是相邻的同学才会交头接耳把，接下来统计交头接耳的同学的坐标喽 
+	cin >> M >> N >> K >> L >> D;
+	for (int i = 0 ; i < D ; i++){
+		int x , y , p , q;
+		cin >> x >> y >> p >> q;
+		if (x == p){
+			edgeY[min(y,q)]++;
+		}else{
+			edgeX[min(x,p)]++;
+		}
+	}
+	auto cmpX = [](int left_index, int right_index) { 
+        return edgeX[left_index] < edgeX[right_index]; 
+    };
+    auto cmpY = [](int left_index, int right_index) { 
+        return edgeY[left_index] < edgeY[right_index]; 
+    };
+    priority_queue<int, vector<int>, decltype(cmpX)>heap1(cmpX);
+    priority_queue<int, vector<int>, decltype(cmpY)>heap2(cmpY);
+    for (int i = 0 ; i < 1000 ; i++){
+    	heap1.push(i);
+    	heap2.push(i);
+	}
+	vector<int>ansX,ansY; 
+	for (int i = 0 ; i < K ; i++){
+		ansX.push_back(heap1.top());
+		heap1.pop();
+	}
+	for (int i = 0 ; i < L ; i++){
+		ansY.push_back(heap2.top());
+		heap2.pop();
+	}
+	sort(ansX.begin(),ansX.end());
+	sort(ansY.begin(),ansY.end());
+	for (int i = 0 ; i < K ; i++){
+		cout << ansX[i] << " "; 
+	}
+	cout << endl;
+	for (int i = 0 ; i < L ; i++){
+		cout << ansY[i] << " ";
+	}
+	return 0;
+}
