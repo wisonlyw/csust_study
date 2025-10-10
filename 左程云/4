@@ -1,0 +1,55 @@
+#include<iostream>
+#include<vector>
+#define INF 10000000
+
+using namespace std;
+
+//O(n^2);
+void choose_sort(vector<int>&nums,int idx){
+    if (idx >= nums.size()-1){
+        return;
+    }
+    int minv = INF;
+    int index = 0;
+    for (int i = idx ; i < nums.size() ; i++){
+        if (minv > nums[i]){
+            minv = nums[i];
+            index = i;
+        }
+    }
+    swap(nums[index],nums[idx]);
+    choose_sort(nums,idx+1);
+}
+
+//O(n^2)
+void bubble_sort(vector<int>&nums){
+    for (int i = nums.size()-1 ; i >= 0 ; i--){
+        for (int j = 0 ; j <= i-1 ; j++){
+            if (nums[j] > nums[j+1]){
+                swap(nums[j],nums[j+1]);
+            }
+        }
+    }
+}
+//O(n*log(n))
+vector<int> insert_sort(vector<int>nums){
+    vector<int>result;
+    for (int i = 0 ; i < nums.size() ; i++){
+        if (result.empty()){
+            result.push_back(nums[i]);
+        }else{
+            auto it = lower_bound(result.begin(),result.end(),nums[i]);
+            if (it == result.end()){
+                result.push_back(nums[i]);
+            }else{
+                result.insert(it,nums[i]);
+            }
+        }
+    }
+    return result;
+}
+
+int main(){
+    vector<int>nums = {2,0,6,8,4,1,5,10};
+    return 0;
+}
