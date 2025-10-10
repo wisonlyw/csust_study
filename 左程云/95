@@ -1,1 +1,7 @@
 bash博弈
+have n stones one time we can carry 1~m stones then we know if n % (m+1) == 0 the last will lose ,  then reserve
+primes times get stones question if n % 6 == 0 the last one will win
+nim博弈
+choose a stone heap , and carry 0-all of them
+fabonanci game
+if n is a fabonanci num if (the first one don't carry all of them , he will lose)
