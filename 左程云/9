@@ -1,0 +1,32 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct listNode{
+    listNode *next;
+    listNode *last;
+    int val;
+    listNode(int val){
+        this->val = val;
+    }
+};
+
+int main(){
+    freopen("example.txt","r",stdin);
+    listNode*node = new listNode(1);
+    listNode*p = node;
+    p->next = nullptr;
+    p->last = nullptr;
+    for (int i = 0 ; i < 3 ; i++){
+        listNode* new_node = new listNode(i);
+        new_node->last = p;
+        p->next = new_node;
+        p = new_node;
+        p->next = nullptr;
+    }
+    for (int i = 0 ; i < 4 ; i++){
+        cout << p->val;
+        p = p->last;
+    }
+    return 0;
+}
