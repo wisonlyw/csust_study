@@ -1,0 +1,85 @@
+/*
+// ----- 3. 计算每行/每列/每个 3x3 宫的初始奇偶（0 表示偶，1 表示奇） -----
+int rowP[9]={0}, colP[9]={0}, blockP[9]={0};
+for(int i=0;i<9;i++) for(int j=0;j<9;j++){
+rowP[i]^=a[i][j]; // 行异或累积
+colP[j]^=a[i][j]; // 列异或累积
+blockP[(i/3)*3 + (j/3)] ^= a[i][j]; // 3x3 宫的索引为 (i/3)*3 + (j/3)
+}
+
+
+// ----- 4. 预处理：对所有 0..511 的 9-bit 掩码，计算 popcount 与其对组内宫的影响 block3 -----
+vector<int> masks_by_parity[2]; // 按掩码 popcount 的奇偶分组：0->偶数个1，1->奇数个1
+int popc[1<<9], block3[1<<9]; // popc[m]：掩码 m 的 1 的个数；block3[m]：m 对当前行组内三个宫的影响（3-bit）
+for(int m=0;m<512;m++){
+popc[m]=__builtin_popcount((unsigned)m);
+int b=0;
+// 对掩码的每一位 c（0..8）检查是否为1，若为1则该位影响其所在的子宫（c/3 -> 0..2）
+for(int c=0;c<9;c++) if(m&(1<<c)) b |= 1<<(c/3);
+block3[m]=b;
+masks_by_parity[popc[m]&1].push_back(m);
+}
+
+
+// ----- 5. 目标与初始状态：列的初始奇偶打包成一个 9-bit 的 startColMask；每个行组的 3-bit 目标 blockGroupTarget -----
+int startColMask=0;
+for(int c=0;c<9;c++) if(colP[c]) startColMask |= 1<<c;
+
+
+int blockGroupTarget[3]={0};
+for(int g=0;g<3;g++){
+int v=0;
+for(int j=0;j<3;j++) if(blockP[g*3 + j]) v |= 1<<j; // 每组三个 3x3 宫的奇偶目标
+blockGroupTarget[g]=v;
+}
+
+
+// ----- 6. DP 初始化 -----
+// 状态索引：idx = col_mask * 8 + groupBits，其中 col_mask in [0..511], groupBits in [0..7]
+const int STATES = 512*8;
+vector<int> dp(STATES, INF), ndp(STATES, INF);
+// 初始状态：列奇偶为 startColMask，groupBits = 0，代价 0
+dp[startColMask*8 + 0] = 0;
+
+
+// ----- 7. 按行进行 DP 转移 -----
+for(int r=0;r<9;r++){
+fill(ndp.begin(), ndp.end(), INF);
+int needParity = rowP[r]; // 当前行要求掩码 m 的 popcount 的奇偶要等于 needParity
+int grp = r/3; // 当前行处于第 grp 组（0..2）
+bool last = (r%3==2); // 是否为该组的最后一行（需要强制检查组目标）
+
+
+// 遍历所有可能的 (col_mask, groupBits) 状态
+for(int col_mask=0; col_mask<512; ++col_mask){
+for(int gb=0; gb<8; ++gb){
+int idx = col_mask*8 + gb;
+if(dp[idx]==INF) continue; // 不可达状态跳过
+int base = dp[idx];
+// 枚举所有满足行奇偶性的掩码 m（即 popcount(m) 的奇偶 = needParity）
+for(int m : masks_by_parity[needParity]){
+int nc = col_mask ^ m; // 新的列奇偶
+int ng = gb ^ block3[m]; // 新的组内宫奇偶
+int cost = base + popc[m]; // 新的代价
+
+
+if(last){
+// 若是本组的最后一行，必须使组内宫的奇偶等于目标
+if(ng != blockGroupTarget[grp]) continue;
+ng = 0; // 进入下一组时清零（下一组开始时没有累积）
+}
+int nidx = nc*8 + ng;
+if(cost < ndp[nidx]) ndp[nidx] = cost; // 取最小代价
+}
+}
+}
+dp.swap(ndp); // 下一行继续
+}
+
+
+// ----- 8. 结果读取：处理完 9 行后，目标是 col_mask == 0 且 groupBits == 0 -----
+int ans = dp[0*8 + 0];
+if(ans>=INF) cout << -1 << "\n"; // 理论上可能不存在解，输出 -1
+else cout << ans << "\n"; // 最少翻转次数
+return 0;
+}
