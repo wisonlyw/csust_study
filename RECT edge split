@@ -1,0 +1,57 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int n, m; // n是矩形的行数（对应输入a），m是矩形的列数（对应输入b）
+int cnt;  // 方案总数
+bool vis[8][9]; // 访问标记数组，大小根据a<=6, b<=7设置，点阵大小为(n+1) x (m+1)
+
+// 方向数组：上、下、左、右
+int dir[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+// DFS函数：搜索从当前点(x,y)到边界的路径
+void dfs(int x, int y) {
+    // 如果当前点到达边界（除起点外），则方案数加一
+    if (x == 0 || x == n || y == 0 || y == m) {
+        cnt++;
+        return;
+    }
+    // 向四个方向移动
+    for (int i = 0; i < 4; i++) {
+        int nx = x + dir[i][0];
+        int ny = y + dir[i][1];
+        // 检查新点是否在点阵范围内且未访问
+        if (nx >= 0 && nx <= n && ny >= 0 && ny <= m && !vis[nx][ny]) {
+            vis[nx][ny] = true;
+            dfs(nx, ny);
+            vis[nx][ny] = false; // 回溯
+        }
+    }
+}
+
+int main() {
+    cin >> n >> m; // 输入矩形的行数a和列数b
+    cnt = 0;
+    memset(vis, false, sizeof(vis)); // 初始化访问数组
+
+    // 枚举下边（y=0）上的点（不包括角点）
+    for (int i = 1; i < n; i++) {
+        vis[i][0] = true; // 标记起点(i,0)
+        vis[i][1] = true; // 标记第一个内部点(i,1)
+        dfs(i, 1);         // 从点(i,1)开始DFS
+        vis[i][0] = false; // 回溯
+        vis[i][1] = false;
+    }
+
+    // 枚举左边（x=0）上的点（不包括角点）
+    for (int i = 1; i < m; i++) {
+        vis[0][i] = true; // 标记起点(0,i)
+        vis[1][i] = true; // 标记第一个内部点(1,i)
+        dfs(1, i);         // 从点(1,i)开始DFS
+        vis[0][i] = false; // 回溯
+        vis[1][i] = false;
+    }
+
+    cout << cnt << endl; // 输出方案总数
+    return 0;
+}
