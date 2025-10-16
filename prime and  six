@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+// 判断是否为素数
+bool isPrime(int n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 == 0 || n % 3 == 0) return false;
+    
+    // 只需要检查到sqrt(n)即可
+    for (int i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 获取素因子
+vector<int> getPrimeFactors(int n) {
+    vector<int> factors;
+    
+    // 处理2的因子
+    while (n % 2 == 0) {
+        if (factors.empty() || factors.back() != 2) {
+            factors.push_back(2);
+        }
+        n /= 2;
+    }
+    
+    // 处理奇数因子
+    for (int i = 3; i * i <= n; i += 2) {
+        while (n % i == 0) {
+            if (factors.empty() || factors.back() != i) {
+                factors.push_back(i);
+            }
+            n /= i;
+        }
+    }
+    
+    // 如果剩下的n是大于1的素数
+    if (n > 1) {
+        factors.push_back(n);
+    }
+    
+    return factors;
+}
+
+int main() {
+    int T;
+    cin >> T;
+    
+    while (T--) {
+        int x;
+        cin >> x;
+        
+        // 判断是否为素数
+        if (isPrime(x)) {
+            cout << "isprime" << endl;
+            cout << x << endl;
+        } else {
+            cout << "noprime" << endl;
+            vector<int> factors = getPrimeFactors(x);
+            
+            // 输出素因子
+            for (int i = 0; i < factors.size(); i++) {
+                if (i > 0) cout << " ";
+                cout << factors[i];
+            }
+            cout << endl;
+        }
+    }
+    
+    return 0;
+}
