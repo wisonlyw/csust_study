@@ -1,0 +1,18 @@
+#include <bits/stdc++.h>
+ 
+int main() {
+  int t;
+  std::cin >> t;
+  while (t--) {
+    long long x, y;
+    std::cin >> x >> y;
+    int ans = 0;
+    while ((x & y) != x) {
+      ans++;
+      x >>= 1;
+    }
+    std::cout << ans + (x != y) << '\n';
+  }
+ 
+  return 0;
+}
