@@ -1,0 +1,309 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+static vector<int> primes;
+
+// Sieve up to 1e6
+void sieve(int N = 1000000) {
+    vector<bool> is_prime(N + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    for (int i = 2; i * 1LL * i <= N; ++i) {
+        if (is_prime[i]) {
+            for (int j = i * i; j <= N; j += i) is_prime[j] = false;
+        }
+    }
+    for (int i = 2; i <= N; ++i) if (is_prime[i]) primes.push_back(i);
+}
+
+// Factor k into primes <= 1e6; returns (p, e)
+vector<pair<long long,int>> factorize(long long k) {
+    vector<pair<long long,int>> fac;
+    long long tmp = k;
+    for (int p : primes) {
+        if (1LL * p * p > tmp) break;
+        if (tmp % p == 0) {
+            int e = 0;
+            while (tmp % p == 0) {
+                tmp /= p;
+                ++e;
+            }
+            fac.emplace_back((long long)p, e);
+        }
+    }
+    if (tmp > 1) {
+        // tmp is prime (guaranteed <= 1e6 by problem statement)
+        fac.emplace_back(tmp, 1);
+    }
+    return fac;
+}
+
+// Build mask counts for an array against k’s factorization
+template <typename It>
+void build_counts(It begin, It end, long long k,
+                  const vector<pair<long long,int>>& fac,
+                  vector<long long>& cnt) {
+    int m = (int)fac.size();
+    long long fullMask = (m == 64) ? -1 : ((1LL << m) - 1); // but m will be small
+    for (auto it = begin; it != end; ++it) {
+        long long x = *it;
+        if (x == 0) continue; // 0 can’t divide positive k
+        if (k % x != 0) continue; // must divide k
+        long long mask = 0;
+        long long y = x;
+        for (int t = 0; t < m; ++t) {
+            long long p = fac[t].first;
+            int e_need = fac[t].second;
+            int e_have = 0;
+            while (y % p == 0) {
+                y /= p;
+                ++e_have;
+                if (e_have > e_need) break; // early stop; though k%x==0 prevents this
+            }
+            if (e_have == e_need) mask |= (1LL << t);
+        }
+        // Since k % x == 0, y should be 1 (no extra primes). Safe to count.
+        cnt[(size_t)mask] += 1;
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    sieve();
+
+    int T;
+    if (!(cin >> T)) return 0;
+    while (T--) {
+        int n;
+        long long k;
+        cin >> n >> k;
+        vector<long long> a(n), b(n);
+        for (int i = 0; i < n; ++i) cin >> a[i];
+        for (int i = 0; i < n; ++i) cin >> b[i];
+
+        // Factor k
+        auto fac = factorize(k);
+        int m = (int)fac.size();
+
+        // Handle k == 1 quickly: only ai == 1 and bj == 1 work
+        if (m == 0) {
+            long long cntA1 = 0, cntB1 = 0;
+            for (auto x : a) if (x == 1) ++cntA1;
+            for (auto y : b) if (y == 1) ++cntB1;
+            cout << (cntA1 * cntB1) << "\n";
+            continue;
+        }
+
+        size_t SZ = 1ULL << m;
+        vector<long long> cntA(SZ, 0), cntB(SZ, 0);
+
+        build_counts(a.begin(), a.end(), k, fac, cntA);
+        build_counts(b.begin(), b.end(), k, fac, cntB);
+
+        // Superset zeta transform on cntB to get superset sums
+        vector<long long> supB = cntB;
+        for (int i = 0; i < m; ++i) {
+            for (size_t mask = 0; mask < SZ; ++mask) {
+                if (((mask >> i) & 1) == 0) {
+                    supB[mask] += supB[mask | (1ULL << i)];
+                }
+            }
+        }
+
+        long long fullMask = (long long)SZ - 1;
+        long long ans = 0;
+        for (size_t mask = 0; mask < SZ; ++mask) {
+            long long need = fullMask ^ (long long)mask; // bits missing in A must be covered by B
+            ans += cntA[mask] * supB[(size_t)need];
+        }
+
+        cout << ans << "\n";
+    }
+
+    return 0;
+}
+例子
+设 
+𝑘
+=
+12
+=
+2
+2
+⋅
+3
+1
+。 所以质因子集合是 
+{
+2
+,
+3
+}
+，指数分别是 
+𝑒
+1
+=
+2
+,
+𝑒
+2
+=
+1
+。 那么 fullMask = 11（二进制）。
+
+步骤 1：看数组元素
+假设
+
+𝑎
+=
+[
+2
+,
+4
+,
+6
+]
+
+𝑏
+=
+[
+3
+,
+12
+]
+
+步骤 2：计算掩码
+对每个数，先看它是否整除 
+𝑘
+=
+12
+，再看它在每个质因子上的指数是否“达标”。
+
+对 
+𝑎
+：
+
+2
+=
+2
+1
+，在 2 上指数 1 < 2，不达标；在 3 上指数 0 < 1，不达标 → 掩码 = 00
+
+4
+=
+2
+2
+，在 2 上指数 2 = 2，达标；在 3 上指数 0 < 1，不达标 → 掩码 = 10
+
+6
+=
+2
+1
+⋅
+3
+1
+，在 2 上指数 1 < 2，不达标；在 3 上指数 1 = 1，达标 → 掩码 = 01
+
+对 
+𝑏
+：
+
+3
+=
+3
+1
+，在 2 上指数 0 < 2，不达标；在 3 上指数 1 = 1，达标 → 掩码 = 01
+
+12
+=
+2
+2
+⋅
+3
+1
+，在 2 上指数 2 = 2，达标；在 3 上指数 1 = 1，达标 → 掩码 = 11
+
+步骤 3：配对
+我们要找 
+mask
+(
+𝑎
+)
+  
+∣
+  
+mask
+(
+𝑏
+)
+=
+11
+。
+
+𝑎
+=
+2
+ (00) + 
+𝑏
+=
+3
+ (01) → 01 ≠ 11 ❌
+
+𝑎
+=
+2
+ (00) + 
+𝑏
+=
+12
+ (11) → 11 ✅
+
+𝑎
+=
+4
+ (10) + 
+𝑏
+=
+3
+ (01) → 11 ✅
+
+𝑎
+=
+4
+ (10) + 
+𝑏
+=
+12
+ (11) → 11 ✅
+
+𝑎
+=
+6
+ (01) + 
+𝑏
+=
+3
+ (01) → 01 ≠ 11 ❌
+
+𝑎
+=
+6
+ (01) + 
+𝑏
+=
+12
+ (11) → 11 ✅
+
+所以一共有 4 对合法的 
+(
+𝑖
+,
+𝑗
+)
+。
+
+数学原理总结
+LCM = k ⇔ 每个质因子都必须“被覆盖”。
+
+用掩码表示覆盖情况，问题就变成了： 有多少对掩码的并集等于全 1。
