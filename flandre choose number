@@ -1,0 +1,60 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MOD = 1000000007;
+int n;
+
+void vector_init(vector<int>&nums){
+    for (int i = 0 ; i < n ; i++){
+        cin >> nums[i];
+    }
+}
+
+void dp_init(vector<vector<int>>&dp,vector<int>nums){
+    dp[0][0] = 1;
+    for (int i = 0 ; i < n ; i++){
+        int val = nums[i] % 495;
+        for (int j = n ; j >= 1 ; j--){
+            for (int k = 0 ; k < 495 ; k++){
+                int new_k = (k + val) % 495;
+                dp[j][new_k] = (dp[j-1][k] + dp[j][new_k]) % MOD;
+            }
+        }
+    }
+}
+int main(){
+    cin >> n;
+    vector<int>a(n) , b(n);
+    vector_init(a) , vector_init(b);
+    vector<vector<int>>dp_A(n+1,vector<int>(495,0));
+    vector<vector<int>>dp_B(n+1,vector<int>(495,0));
+    dp_init(dp_A, a) , dp_init(dp_B, b);
+    vector<vector<int>> sumB(n+1, vector<int>(495, 0));
+    for (int i = 0; i <= n; i++) {
+        for (int k = 0; k < 495; k++) {
+            if (i == 0) {
+                sumB[i][k] = dp_B[0][k];
+            } else {
+                sumB[i][k] = (sumB[i-1][k] + dp_B[i][k]) % MOD;
+            }
+        }
+    }
+    vector<long long> ans(495, 0);
+    for (int i = 0; i <= n; i++) {  
+        for (int p = 0; p < 495; p++) { 
+            if (dp_A[i][p] == 0) continue;
+            
+            for (int r = 0; r < 495; r++) {  
+                int need_q = (r - p + 495) % 495;
+                ans[r] = (ans[r] + 1LL * dp_A[i][p] * sumB[i][need_q]) % MOD;
+            }
+        }
+    }
+    
+    for (int i = 0; i < 495; i++) {
+        cout << ans[i] << " ";
+    }
+    
+    return 0;
+}
