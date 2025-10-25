@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Group {
+    long long A, B, C;
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    long long K;
+    cin >> N >> K;
+    vector<Group> g(N+1);
+    for (int i = 1; i <= N; i++) {
+        cin >> g[i].A >> g[i].B >> g[i].C;
+    }
+
+    vector<long long> ans(N+1, -1);
+
+    queue<int> q; // 等待队列
+    using P = pair<long long,int>; // (离开时间, 团体编号)
+    priority_queue<P, vector<P>, greater<P>> pq; // 餐厅内团体
+    long long cur = 0;
+    long long used = 0; // 当前餐厅人数
+
+    int idx = 1; // 下一个到达的团体编号
+    int entered = 0;
+
+    while (entered < N) {
+        // 如果队列为空，推进时间到下一个到达或下一个离开
+        if (q.empty()) {
+            long long nextArr = (idx <= N ? g[idx].A : LLONG_MAX);
+            long long nextLeave = (pq.empty() ? LLONG_MAX : pq.top().first);
+            cur = min(nextArr, nextLeave);
+        }
+
+        // 处理离开事件
+        while (!pq.empty() && pq.top().first <= cur) {
+            auto [t, id] = pq.top(); pq.pop();
+            used -= g[id].C;
+        }
+
+        // 处理到达事件
+        while (idx <= N && g[idx].A <= cur) {
+            q.push(idx);
+            idx++;
+        }
+
+        // 尝试让队首入场
+        bool progressed = false;
+        while (!q.empty()) {
+            int id = q.front();
+            if (used + g[id].C <= K) {
+                // 可以入场
+                ans[id] = cur;
+                used += g[id].C;
+                pq.push({cur + g[id].B, id});
+                q.pop();
+                entered++;
+                progressed = true;
+            } else break;
+        }
+
+        if (!progressed && !q.empty()) {
+            // 无法入场，推进时间到最近离开
+            if (!pq.empty()) {
+                cur = pq.top().first;
+            } else {
+                // 餐厅空但人数超限（不可能，因为 Ci ≤ K）
+                cur++;
+            }
+        }
+    }
+
+    for (int i = 1; i <= N; i++) {
+        cout << ans[i] << "\n";
+    }
+
+    return 0;
+}
